@@ -108,6 +108,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/audio", express.static(path.join(__dirname, "public", "audio"), { maxAge: "7d" }));
 app.use("/video", express.static(path.join(__dirname, "public", "video"), { maxAge: "7d" }));
+app.use("/img", express.static(path.join(__dirname, "public", "img"), { maxAge: "7d" })); // ✅ thêm
 
 const server = http.createServer(app);
 const io = new Server(server);
@@ -287,6 +288,9 @@ body{
   padding-top:calc(clamp(12px, 2.2vw, 24px) + env(safe-area-inset-top));
   padding-bottom:calc(clamp(12px, 2.2vw, 24px) + env(safe-area-inset-bottom));
   visibility:hidden;
+
+  position:relative; /* ✅ thêm để nằm trên background */
+  z-index:1;         /* ✅ thêm */
 }
 
 .header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -393,7 +397,6 @@ th{color:var(--muted);font-weight:900}
   background:#000; /* fallback */
 }
 
-/* Video nền: cover + blur -> giống màu nền của video */
 #introVidBg{
   position:absolute;
   left:0; top:0;
@@ -406,7 +409,6 @@ th{color:var(--muted);font-weight:900}
   opacity:0.95;
 }
 
-/* Video chính: contain -> thấy FULL khung hình + tăng sáng */
 #introVid{
   position:absolute;
   left:0; top:0;
@@ -456,6 +458,40 @@ th{color:var(--muted);font-weight:900}
 
 .intro-seen .container{visibility:visible}
 .intro-seen #intro{display:none !important}
+
+/* ================== PLAY BACKGROUND (FULL ảnh + đẹp) ================== */
+.play-bg{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:#050814;
+}
+
+/* Lớp phủ fill màn hình (cover) + blur */
+.play-bg::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image:url("/img/tet-doan-vien.png");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  transform:scale(1.08);
+  filter:blur(22px) brightness(0.95) saturate(1.15);
+  opacity:0.35;
+}
+
+/* Lớp chính: HIỆN TRỌN VẸN ảnh (contain) */
+.play-bg::after{
+  content:"";
+  position:absolute; inset:0;
+  background-image:url("/img/tet-doan-vien.png");
+  background-size:contain;
+  background-position:center;
+  background-repeat:no-repeat;
+  filter:drop-shadow(0 18px 50px rgba(0,0,0,.55));
+  opacity:1;
+}
 </style>
 </head>
 
@@ -970,6 +1006,9 @@ function hostPageHtml() {
 
 function playPageHtml() {
   return `
+  <!-- ✅ Background Tết cho trang người chơi -->
+  <div class="play-bg" aria-hidden="true"></div>
+
   <div class="header">
     <h1>Người chơi</h1>
     <div class="row">
