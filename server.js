@@ -108,6 +108,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/audio", express.static(path.join(__dirname, "public", "audio"), { maxAge: "7d" }));
 app.use("/img", express.static(path.join(__dirname, "public", "img"), { maxAge: "7d" }));
+app.use("/video", express.static(path.join(__dirname, "public", "video"), { maxAge: "7d" }));
 
 const server = http.createServer(app);
 const io = new Server(server);
@@ -221,19 +222,19 @@ function endGame(room) {
   broadcast(room);
 }
 
-/* ================== HTML LAYOUT (Splash + Nhạc Splash nghe được) ================== */
+/* ================== HTML LAYOUT (VIDEO BG + MOBILE SAFE + SPLASH MUSIC) ================== */
 function layout(title, bodyHtml) {
   return `<!doctype html>
 <html lang="vi">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>${title}</title>
 
 <script>
 (function(){
   try{
-    var KEY = 'splash_seen_session_v1'; // chỉ 1 lần trong 1 tab
+    var KEY = 'splash_seen_session_v1';
     if (sessionStorage.getItem(KEY) === '1') {
       document.documentElement.classList.add('splash-seen');
     }
@@ -242,28 +243,94 @@ function layout(title, bodyHtml) {
 </script>
 
 <style>
-:root{--bg:#0b1020;--text:#e7ecff;--muted:#a9b3d9;--line:#23305c;--btn:#2d3a6b;--btn2:#1f2a53;--good:#37d67a;--bad:#ff5a5f}
+:root{
+  --text:#f4f6ff;
+  --muted:rgba(244,246,255,.75);
+  --line:rgba(255,255,255,.18);
+  --card:rgba(10,14,28,.60);
+  --card2:rgba(10,14,28,.45);
+  --btn:rgba(70,85,170,.55);
+  --btn2:rgba(70,85,170,.70);
+  --good:#37d67a;--bad:#ff5a5f;
+}
 *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-body{margin:0;background:radial-gradient(1200px 800px at 20% 10%, #1a2550 0%, var(--bg) 55%);color:var(--text)}
-a{color:var(--text);text-decoration:none}
-.container{max-width:980px;margin:0 auto;padding:24px}
-.header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-h1{margin:0;font-size:22px}
-.card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
-.grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+html,body{height:100%}
+body{margin:0;color:var(--text);background:#000;overflow-x:hidden}
+
+/* video background */
+.bg-video{
+  position:fixed; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  z-index:-3;
+  filter:contrast(1.05) saturate(1.05);
+}
+.bg-overlay{
+  position:fixed; inset:0; z-index:-2;
+  background:
+    radial-gradient(1200px 900px at 20% 10%, rgba(0,0,0,.15), rgba(0,0,0,.62) 55%),
+    linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.65));
+}
+
+.container{
+  max-width:980px;
+  margin:0 auto;
+  padding:clamp(12px, 2.2vw, 24px);
+  padding-top:calc(clamp(12px, 2.2vw, 24px) + env(safe-area-inset-top));
+  padding-bottom:calc(clamp(12px, 2.2vw, 24px) + env(safe-area-inset-bottom));
+  visibility:hidden;
+}
+
+.header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(18px, 4.5vw, 22px);line-height:1.2;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+h2{text-shadow:0 2px 14px rgba(0,0,0,.45)}
+.small{font-size:clamp(12px, 3.2vw, 13px);color:var(--muted)}
+label{font-size:clamp(12px, 3.2vw, 13px);color:var(--muted)}
+
+.card{
+  background:linear-gradient(180deg, var(--card), var(--card2));
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:clamp(12px, 2.2vw, 16px);
+  box-shadow:0 10px 40px rgba(0,0,0,.35);
+  backdrop-filter: blur(6px);
+}
+
+.grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
 @media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
+
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-label{font-size:13px;color:var(--muted)}
-input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--text);outline:none}
-.btn{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--btn);color:var(--text);cursor:pointer;font-weight:800}
+
+input{
+  width:100%;padding:10px 12px;border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(0,0,0,.28);
+  color:var(--text);outline:none
+}
+
+.btn{
+  padding:10px 14px;border-radius:12px;
+  border:1px solid var(--line);
+  background:var(--btn);color:var(--text);
+  cursor:pointer;font-weight:800
+}
 .btn:hover{background:var(--btn2)}
 .btn:disabled{opacity:.55;cursor:not-allowed}
-.small{font-size:12px;color:var(--muted)}
-.bigcode{font-size:28px;letter-spacing:3px;font-weight:900}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(0,0,0,.14);color:var(--muted);font-size:12px}
+
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(0,0,0,.22);
+  color:var(--muted);font-size:12px
+}
 .dot{width:8px;height:8px;border-radius:999px;background:var(--muted);display:inline-block}
 .dot.good{background:var(--good)} .dot.bad{background:var(--bad)}
+
+.bigcode{font-size:clamp(22px, 7vw, 32px);letter-spacing:3px;font-weight:900;word-break:break-word}
+
 hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+
 .choices{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
 @media(min-width:720px){.choices{grid-template-columns:1fr 1fr}}
 
@@ -275,72 +342,66 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
   cursor:pointer;text-align:left;
   transition:filter .15s ease, transform .05s ease;
 }
-.choice:hover{ filter:brightness(1.08); }
-.choice:active{ transform:translateY(1px); }
+.choice:hover{filter:brightness(1.08)}
+.choice:active{transform:translateY(1px)}
 .choice[disabled]{opacity:.78;cursor:not-allowed;filter:none;}
 .choice .opt{
   width:34px;height:34px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
-  font-weight:900;letter-spacing:.5px;
-  background:rgba(231,236,255,.95);color:#0b1020;
-  border:1px solid rgba(0,0,0,.18);flex:0 0 auto
+  font-weight:900;
+  background:rgba(255,255,255,.95);
+  color:#0b1020;
+  border:1px solid rgba(0,0,0,.18);
+  flex:0 0 auto
 }
-.choice .txt{flex:1;font-weight:700;line-height:1.25;color:#fff}
+.choice .txt{flex:1;font-weight:800;line-height:1.25;color:#fff}
 
-.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line);background:rgba(0,0,0,.14);color:var(--muted)}
+.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--muted)}
 .good{color:var(--good)} .bad{color:var(--bad)}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
-th{color:var(--muted);font-weight:800}
 
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999}
+/* tables responsive */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
+table{width:100%;border-collapse:collapse;margin-top:10px;min-width:420px}
+th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+th{color:var(--muted);font-weight:900}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999}
 .modal{max-width:720px;width:100%}
 
-/* timer quanh khung */
-.qaCard{ position:relative; overflow:hidden; }
-.timer-svg{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
-.timer-track{ fill:none; stroke:rgba(255,255,255,.18); stroke-width:6; }
+/* timer */
+.qaCard{position:relative;overflow:hidden}
+.timer-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.timer-track{fill:none;stroke:rgba(255,255,255,.18);stroke-width:6}
 .timer-prog{
-  fill:none; stroke:rgba(255, 215, 0, .95); stroke-width:6;
-  stroke-linecap:round; stroke-linejoin:round;
-  opacity:0;
+  fill:none;stroke:rgba(255,215,0,.95);stroke-width:6;
+  stroke-linecap:round;stroke-linejoin:round;opacity:0
 }
 
 /* splash */
-.splash{
-  position:fixed; inset:0;
-  background:#000;
-  display:flex; align-items:center; justify-content:center;
-  z-index:999999;
-  padding:0;
-}
-.splash img{ width:100%; height:100%; object-fit:cover; display:block; }
-.splash.hide{ opacity:0; pointer-events:none; transition:opacity .45s ease; }
+.splash{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:999999;padding:0}
+.splash img{width:100%;height:100%;object-fit:cover;display:block}
+.splash.hide{opacity:0;pointer-events:none;transition:opacity .45s ease}
 .splash-hint{
-  position:fixed;
-  bottom:14px; left:50%;
-  transform:translateX(-50%);
-  background:rgba(0,0,0,.55);
-  border:1px solid rgba(255,255,255,.25);
-  color:#fff;
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:12px;
-  z-index:1000000;
+  position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.25);
+  color:#fff;padding:6px 10px;border-radius:999px;font-size:12px;z-index:1000000
 }
 
-/* ✅ chống nháy + chỉ hiện splash 1 lần */
-.container{ visibility:hidden; }
-.splash-seen .container{ visibility:visible; }
-.splash-seen #splash{ display:none !important; }
+/* show content after splash */
+.splash-seen .container{visibility:visible}
+.splash-seen #splash{display:none !important}
 </style>
 </head>
+
 <body>
+<video class="bg-video" autoplay muted loop playsinline preload="auto">
+  <source src="/video/bg.mp4" type="video/mp4">
+</video>
+<div class="bg-overlay"></div>
 
 <div id="splash" class="splash">
   <img src="/img/splash.png" alt="Splash"/>
   <div id="splashHint" class="splash-hint">Bấm để vào</div>
-
   <audio id="splashAudio" preload="auto" loop playsinline>
     <source src="/audio/splash.mp3" type="audio/mpeg">
   </audio>
@@ -353,7 +414,6 @@ th{color:var(--muted);font-weight:800}
 (function(){
   var splash = document.getElementById('splash');
   if(!splash) return;
-
   if (document.documentElement.classList.contains('splash-seen')) return;
 
   var hint = document.getElementById('splashHint');
@@ -362,48 +422,41 @@ th{color:var(--muted);font-weight:800}
 
   function stopSplashAudio(){
     if (!audio) return;
-    try{
-      audio.pause();
-      audio.currentTime = 0;
-    }catch(e){}
+    try{ audio.pause(); audio.currentTime = 0; }catch(e){}
   }
 
   // thử autoplay (có thể bị chặn)
   if (audio) {
-    try {
+    try{
       audio.volume = 1.0;
       var p = audio.play();
       if (p && typeof p.then === 'function') {
         p.then(function(){ audioStarted = true; })
          .catch(function(){ audioStarted = false; });
       }
-    } catch(e){}
+    }catch(e){}
   }
 
   function hideSplash(){
-    try{ sessionStorage.setItem('splash_seen_session_v1', '1'); }catch(e){}
+    try{ sessionStorage.setItem('splash_seen_session_v1','1'); }catch(e){}
     stopSplashAudio();
     document.documentElement.classList.add('splash-seen');
     splash.classList.add('hide');
     setTimeout(function(){ if(splash) splash.remove(); }, 500);
   }
 
-  // ✅ Click:
-  // - nếu chưa bật được nhạc: click lần 1 để bật nhạc (không tắt splash)
-  // - nếu đã bật nhạc: click lần 2 tắt nhạc + tắt splash
+  // click: lần 1 bật nhạc (nếu bị chặn), lần 2 vào
   splash.addEventListener('click', function(){
     if (!audio) return hideSplash();
-
     if (!audioStarted) {
       audio.play().then(function(){
         audioStarted = true;
         if (hint) hint.textContent = "Nhạc đã bật ✅ Bấm lần nữa để vào";
       }).catch(function(){
-        if (hint) hint.textContent = "Trình duyệt đang chặn âm thanh. Hãy bật âm lượng rồi bấm lại.";
+        if (hint) hint.textContent = "Trình duyệt chặn âm thanh. Bật âm lượng rồi bấm lại.";
       });
       return;
     }
-
     hideSplash();
   });
 })();
@@ -417,7 +470,10 @@ th{color:var(--muted);font-weight:800}
 app.get("/health", (_, res) => res.json({ ok: true, preDelayMs: PRE_DELAY_MS }));
 
 app.get("/", (_, res) => {
-  res.send(layout("Quiz Realtime", `
+  res.send(
+    layout(
+      "Quiz Realtime",
+      `
     <div class="card">
       <div class="header">
         <h1>${QUIZ.title}</h1>
@@ -431,11 +487,16 @@ app.get("/", (_, res) => {
         <a class="btn" href="/host">Host (cần key)</a>
       </div>
     </div>
-  `));
+  `
+    )
+  );
 });
 
 app.get("/host-login", (req, res) => {
-  res.send(layout("Nhập Host Key", `
+  res.send(
+    layout(
+      "Nhập Host Key",
+      `
     <div class="card">
       <h1>Nhập Host Key</h1>
       <p class="small">Chỉ người có key mới vào được trang Host.</p>
@@ -450,13 +511,18 @@ app.get("/host-login", (req, res) => {
       <hr/>
       <p class="small">Vào nhanh: <b>/host?key=YOUR_KEY</b></p>
     </div>
-  `));
+  `
+    )
+  );
 });
 
 app.post("/host-login", (req, res) => {
   const key = String(req.body.key || "").trim();
   if (!key || key !== HOST_KEY) {
-    return res.send(layout("Sai Host Key", `
+    return res.send(
+      layout(
+        "Sai Host Key",
+        `
       <div class="card">
         <h1 class="bad">Sai Host Key</h1>
         <p class="small">Vui lòng thử lại.</p>
@@ -465,7 +531,9 @@ app.post("/host-login", (req, res) => {
           <a class="btn" href="/play">Tôi là người chơi</a>
         </div>
       </div>
-    `));
+    `
+      )
+    );
   }
   setHostCookie(req, res);
   return res.redirect("/host");
@@ -476,15 +544,23 @@ app.get("/host-logout", (req, res) => {
   return res.redirect("/play");
 });
 
-app.get("/host", (req, res, next) => {
-  const k = String(req.query.key || "").trim();
-  if (k && k === HOST_KEY) {
-    setHostCookie(req, res);
-    return res.redirect("/host");
-  }
-  return next();
-}, requireHost, (req, res) => {
-  res.send(layout("Host", `
+// /host?key=... set cookie nhanh
+app.get(
+  "/host",
+  (req, res, next) => {
+    const k = String(req.query.key || "").trim();
+    if (k && k === HOST_KEY) {
+      setHostCookie(req, res);
+      return res.redirect("/host");
+    }
+    return next();
+  },
+  requireHost,
+  (req, res) => {
+    res.send(
+      layout(
+        "Host",
+        `
     <div class="header">
       <h1>Host (MC)</h1>
       <div class="row">
@@ -503,7 +579,7 @@ app.get("/host", (req, res, next) => {
           <div>
             <div class="small">Mã phòng</div>
             <div id="roomCode" class="bigcode">—</div>
-            <div class="small">Prep <b>0.5s</b> → timer viền chạy <b>22s</b> (không hiện giây).</div>
+            <div class="small">Prep <b>0.5s</b> → thanh thời gian viền chạy <b>22s</b>.</div>
           </div>
           <div class="row">
             <span class="pill">Người chơi: <b id="playersCount">0</b></span>
@@ -521,7 +597,7 @@ app.get("/host", (req, res, next) => {
 
       <div id="qaCardHost" class="card qaCard">
         <div class="small">Câu hỏi đang chạy</div>
-        <h2 id="qText" style="margin:6px 0 0;font-size:18px">—</h2>
+        <h2 id="qText" style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">—</h2>
         <div class="row" style="margin-top:8px">
           <span class="badge">Đã trả lời: <b id="qAnswered">0</b></span>
         </div>
@@ -531,11 +607,13 @@ app.get("/host", (req, res, next) => {
 
     <div class="card" style="margin-top:16px">
       <div class="small">Bảng xếp hạng tổng điểm</div>
-      <h2 style="margin:6px 0 0;font-size:18px">Top 15 (tích lũy)</h2>
-      <table>
-        <thead><tr><th>#</th><th>Tên</th><th>Tổng điểm</th></tr></thead>
-        <tbody id="lbBody"><tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr></tbody>
-      </table>
+      <h2 style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">Top 15 (tích lũy)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Tên</th><th>Tổng điểm</th></tr></thead>
+          <tbody id="lbBody"><tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr></tbody>
+        </table>
+      </div>
     </div>
 
     <div id="fastPopup" class="overlay">
@@ -544,10 +622,12 @@ app.get("/host", (req, res, next) => {
           <h1 style="font-size:18px;margin:0">Top 5 đúng & nhanh (câu vừa xong)</h1>
           <span class="pill"><span class="small">Tự tắt sau 7 giây</span></span>
         </div>
-        <table>
-          <thead><tr><th>#</th><th>Tên</th><th>Thời gian</th><th>+Điểm</th></tr></thead>
-          <tbody id="fastBody"></tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Tên</th><th>Thời gian</th><th>+Điểm</th></tr></thead>
+            <tbody id="fastBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -690,7 +770,9 @@ app.get("/host", (req, res, next) => {
           audio.play().catch(function(){ soundBtn.style.display = "inline-flex"; });
         }, delayMs);
       }
-      soundBtn.onclick = function(){ audio.play().then(function(){ soundBtn.style.display = "none"; }).catch(function(){}); };
+      soundBtn.onclick = function(){
+        audio.play().then(function(){ soundBtn.style.display = "none"; }).catch(function(){});
+      };
 
       var dot = document.getElementById("connDot");
       var text = document.getElementById("connText");
@@ -819,11 +901,17 @@ app.get("/host", (req, res, next) => {
 
       setButtons();
     </script>
-  `));
-});
+  `
+      )
+    );
+  }
+);
 
 app.get("/play", (_, res) => {
-  res.send(layout("Người chơi", `
+  res.send(
+    layout(
+      "Người chơi",
+      `
     <div class="header">
       <h1>Người chơi</h1>
       <div class="row">
@@ -862,7 +950,7 @@ app.get("/play", (_, res) => {
 
       <div id="qaCardPlay" class="card qaCard">
         <div class="small">Câu hỏi</div>
-        <h2 id="qText" style="margin:6px 0 0;font-size:18px">—</h2>
+        <h2 id="qText" style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">—</h2>
         <div id="choicesPlay" class="choices"></div>
         <div id="feedback" class="small" style="margin-top:10px"></div>
       </div>
@@ -870,11 +958,13 @@ app.get("/play", (_, res) => {
 
     <div class="card" style="margin-top:16px">
       <div class="small">Bảng xếp hạng tổng điểm</div>
-      <h2 style="margin:6px 0 0;font-size:18px">Top 15 (tích lũy)</h2>
-      <table>
-        <thead><tr><th>#</th><th>Tên</th><th>Tổng điểm</th></tr></thead>
-        <tbody id="lbBody"><tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr></tbody>
-      </table>
+      <h2 style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">Top 15 (tích lũy)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Tên</th><th>Tổng điểm</th></tr></thead>
+          <tbody id="lbBody"><tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr></tbody>
+        </table>
+      </div>
     </div>
 
     <div id="fastPopup" class="overlay">
@@ -883,10 +973,12 @@ app.get("/play", (_, res) => {
           <h1 style="font-size:18px;margin:0">Top 5 đúng & nhanh (câu vừa xong)</h1>
           <span class="pill"><span class="small">Tự tắt sau 7 giây</span></span>
         </div>
-        <table>
-          <thead><tr><th>#</th><th>Tên</th><th>Thời gian</th><th>+Điểm</th></tr></thead>
-          <tbody id="fastBody"></tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Tên</th><th>Thời gian</th><th>+Điểm</th></tr></thead>
+            <tbody id="fastBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -1028,7 +1120,9 @@ app.get("/play", (_, res) => {
           audio.play().catch(function(){ soundBtn.style.display = "inline-flex"; });
         }, delayMs);
       }
-      soundBtn.onclick = function(){ audio.play().then(function(){ soundBtn.style.display = "none"; }).catch(function(){}); };
+      soundBtn.onclick = function(){
+        audio.play().then(function(){ soundBtn.style.display = "none"; }).catch(function(){});
+      };
 
       var dot = document.getElementById("connDot");
       var text = document.getElementById("connText");
@@ -1162,7 +1256,9 @@ app.get("/play", (_, res) => {
         alert("Kết thúc game! Tổng người chơi: " + p.totalPlayers);
       });
     </script>
-  `));
+  `
+    )
+  );
 });
 
 /* ================== SOCKET.IO ================== */
@@ -1317,3 +1413,4 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, "0.0.0.0", () => console.log("Realtime quiz running on port", PORT));
+
