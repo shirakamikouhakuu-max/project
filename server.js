@@ -65,35 +65,34 @@ function requireHost(req, res, next) {
 }
 
 /* ================== QUIZ CONFIG ================== */
-const PRE_DELAY_MS = 500;       // chuẩn bị 0.5s
-const POPUP_SHOW_MS = 7000;     // popup top5 hiện 7s
-const RESULT_SHOW_MS = 2500;    // ✅ hiện biểu đồ trước top5
+const PRE_DELAY_MS = 500;
+const POPUP_SHOW_MS = 7000;
 const MAX_POINTS = 1000;
 
 /* ================== QUIZ (20 câu khó hơn) ================== */
 const QUIZ = {
-  title: "Quiz Realtime – 22s + Nhạc Olympia + Popup Top 5",
+  title: "Quiz Realtime – 22s + Nhạc Olympia + Biểu đồ Kahoot-like",
   questions: [
     { text: "Nguyên tố hóa học nào có ký hiệu là W?", choices: ["Vonfram (Tungsten)", "Kẽm (Zn)", "Sắt (Fe)", "Bạc (Ag)"], correctIndex: 0, timeLimitSec: 22 },
     { text: "Giá trị của log₂(64) bằng bao nhiêu?", choices: ["4", "5", "6", "8"], correctIndex: 2, timeLimitSec: 22 },
     { text: "Số nguyên tố lớn nhất nhỏ hơn 100 là số nào?", choices: ["97", "99", "91", "89"], correctIndex: 0, timeLimitSec: 22 },
     { text: "Định luật nào: Áp suất tác dụng lên chất lỏng được truyền nguyên vẹn theo mọi hướng?", choices: ["Pascal", "Archimedes", "Ohm", "Boyle"], correctIndex: 0, timeLimitSec: 22 },
-    { text: "Thành phần chiếm tỉ lệ lớn nhất trong khí quyển Trái Đất (theo thể tích) là gì?", choices: ["O₂", "N₂", "CO₂", "Ar"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Thành phần chiếm tỉ lệ lớn nhất trong khí quyển Trái Đất là gì?", choices: ["O₂", "N₂", "CO₂", "Ar"], correctIndex: 1, timeLimitSec: 22 },
     { text: "Trong hệ SI, đơn vị của công (Work) là gì?", choices: ["Watt", "Joule", "Newton", "Pascal"], correctIndex: 1, timeLimitSec: 22 },
     { text: "Tác giả của 'Truyện Kiều' là ai?", choices: ["Nguyễn Du", "Hồ Xuân Hương", "Nguyễn Trãi", "Xuân Diệu"], correctIndex: 0, timeLimitSec: 22 },
     { text: "Vệ tinh nhân tạo đầu tiên của loài người tên là gì?", choices: ["Apollo 11", "Sputnik 1", "Voyager 1", "Hubble"], correctIndex: 1, timeLimitSec: 22 },
     { text: "1 Ampere tương đương bao nhiêu Coulomb trên mỗi giây?", choices: ["1 C/s", "10 C/s", "0.1 C/s", "100 C/s"], correctIndex: 0, timeLimitSec: 22 },
     { text: "Khái niệm 'chu kỳ bán rã' thường dùng trong lĩnh vực nào?", choices: ["Âm học", "Phóng xạ hạt nhân", "Khí tượng", "Cơ học chất lỏng"], correctIndex: 1, timeLimitSec: 22 },
     { text: "Trong tam giác vuông, định lý Pythagoras: a² + b² = ?", choices: ["c", "c²", "2c", "ab"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Cấu trúc dữ liệu LIFO trong lập trình là gì?", choices: ["Queue (Hàng đợi)", "Stack (Ngăn xếp)", "Tree (Cây)", "Graph (Đồ thị)"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Đường tròn là tập hợp các điểm như thế nào trong mặt phẳng?", choices: ["Cách đều một điểm cố định", "Cách đều một đường thẳng", "Tổng khoảng cách đến 2 điểm cố định không đổi", "Luôn tạo góc 90° với một tia cố định"], correctIndex: 0, timeLimitSec: 22 },
-    { text: "Nguyên tố có số hiệu nguyên tử 29 là gì?", choices: ["Ni (Niken)", "Cu (Đồng)", "Ag (Bạc)", "Sn (Thiếc)"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Cấu trúc dữ liệu LIFO trong lập trình là gì?", choices: ["Queue", "Stack", "Tree", "Graph"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Đường tròn là tập hợp các điểm như thế nào?", choices: ["Cách đều một điểm cố định", "Cách đều một đường thẳng", "Tổng khoảng cách đến 2 điểm cố định không đổi", "Luôn tạo góc 90° với một tia"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Nguyên tố có số hiệu nguyên tử 29 là gì?", choices: ["Ni", "Cu", "Ag", "Sn"], correctIndex: 1, timeLimitSec: 22 },
     { text: "Hằng số Avogadro xấp xỉ bằng bao nhiêu?", choices: ["6.022×10²³", "3.14×10⁸", "9.81", "1.602×10⁻¹⁹"], correctIndex: 0, timeLimitSec: 22 },
-    { text: "Tốc độ ánh sáng trong chân không xấp xỉ bằng bao nhiêu?", choices: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10¹⁰ m/s", "3×10⁴ m/s"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Hai điện trở bằng nhau R mắc song song, điện trở tương đương bằng bao nhiêu?", choices: ["2R", "R/2", "R", "R²"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "CPI là viết tắt của chỉ số nào trong kinh tế?", choices: ["Consumer Price Index", "Capital Profit Index", "Consumer Product Income", "Core Payment Indicator"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Tốc độ ánh sáng trong chân không xấp xỉ?", choices: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10¹⁰ m/s", "3×10⁴ m/s"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Hai điện trở bằng nhau R mắc song song, Rtd = ?", choices: ["2R", "R/2", "R", "R²"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "CPI là viết tắt của chỉ số nào?", choices: ["Consumer Price Index", "Capital Profit Index", "Consumer Product Income", "Core Payment Indicator"], correctIndex: 0, timeLimitSec: 22 },
     { text: "Thủ đô của Australia là thành phố nào?", choices: ["Sydney", "Melbourne", "Canberra", "Perth"], correctIndex: 2, timeLimitSec: 22 },
-    { text: "HTTPS thường dùng giao thức bảo mật nào?", choices: ["TLS", "FTP", "SMTP", "SNMP"], correctIndex: 0, timeLimitSec: 22 }
+    { text: "HTTPS thường dùng lớp bảo mật nào?", choices: ["TLS", "FTP", "SMTP", "SNMP"], correctIndex: 0, timeLimitSec: 22 }
   ]
 };
 
@@ -112,7 +111,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/audio", express.static(path.join(__dirname, "public", "audio"), { maxAge: "7d" }));
 app.use("/video", express.static(path.join(__dirname, "public", "video"), { maxAge: "7d" }));
-app.use("/img", express.static(path.join(__dirname, "public", "img"), { maxAge: "7d" })); // ✅ ảnh background
+app.use("/img", express.static(path.join(__dirname, "public", "img"), { maxAge: "7d" }));
 
 const server = http.createServer(app);
 const io = new Server(server);
@@ -158,7 +157,7 @@ function ensureChoiceMeta(room) {
   meta = {
     order,
     correctShuffledIndex,
-    counts: new Array(order.length).fill(0) // ✅ đếm người chọn A/B/C/D theo thứ tự đã shuffle
+    counts: new Array(order.length).fill(0)
   };
   room.choiceMeta.set(room.qIndex, meta);
   return meta;
@@ -220,11 +219,12 @@ function startQuestion(room) {
   if (room.timer) clearTimeout(room.timer);
 
   room.questionEndedFor = null;
+  room.answerRevealedFor = null;
+
   room.qStartAtMs = Date.now() + PRE_DELAY_MS;
 
   for (const p of room.players.values()) p.lastAnswer = null;
 
-  // ✅ tạo meta (đáp án random + counts reset)
   ensureChoiceMeta(room);
 
   io.to(room.code).emit("question:start", safeQuestionPayload(room));
@@ -253,21 +253,15 @@ function endQuestion(room) {
   const answeredCount = meta.counts.reduce((a, b) => a + b, 0);
 
   const totalTop15 = getTotalLeaderboard(room).slice(0, 15);
-  const fastTop5 = getFastCorrectTop5(room);
 
+  // ✅ KHÔNG gửi correctIndex ở đây (chưa công bố)
   io.to(room.code).emit("question:end", {
     qIndex: room.qIndex,
-    correctIndex: meta.correctShuffledIndex,
     choices: shuffledChoices,
     counts: meta.counts,
     answeredCount,
     totalPlayers: room.players.size,
-
-    // leaderboard + top5 (nhưng client sẽ show sau biểu đồ)
-    totalTop15,
-    fastTop5,
-    resultShowMs: RESULT_SHOW_MS,
-    popupShowMs: POPUP_SHOW_MS
+    totalTop15
   });
 
   broadcast(room);
@@ -340,7 +334,7 @@ body{
   overflow-x:hidden;
 }
 
-/* ✅ Background ảnh (áp dụng cho Host + Play khi có .app-bg trong page) */
+/* ✅ Background ảnh dùng cho Host + Play */
 .app-bg{
   position:fixed;
   inset:0;
@@ -363,7 +357,7 @@ body{
   content:"";
   position:absolute; inset:0;
   background-image:url("/img/tet-doan-vien.png");
-  background-size:contain;     /* ✅ hiển thị hết ảnh */
+  background-size:contain;
   background-position:center;
   background-repeat:no-repeat;
   filter:drop-shadow(0 18px 50px rgba(0,0,0,.55));
@@ -377,9 +371,8 @@ body{
   padding-top:calc(clamp(12px, 2.2vw, 24px) + env(safe-area-inset-top));
   padding-bottom:calc(clamp(12px, 2.2vw, 24px) + env(safe-area-inset-bottom));
   visibility:hidden;
-
   position:relative;
-  z-index:1; /* ✅ nằm trên background ảnh */
+  z-index:1;
 }
 
 .header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -464,59 +457,186 @@ th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:
 th{color:var(--muted);font-weight:900}
 
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999}
-.modal{max-width:720px;width:100%}
+.modal{max-width:820px;width:100%}
 
-/* ✅ biểu đồ cột */
-.chart{
-  display:flex;
-  gap:10px;
-  align-items:flex-end;
+/* ================== KAHOOT-LIKE BAR CHART ================== */
+.chartWrapV2{
   margin-top:12px;
-}
-.barItem{flex:1;min-width:0}
-.barBox{
-  height:150px;
+  padding:12px;
+  border-radius:16px;
   border:1px solid var(--line);
-  border-radius:12px;
   background:rgba(0,0,0,.18);
+}
+
+.chartV2{
+  display:grid;
+  grid-template-columns: 48px 1fr;
+  gap:10px;
+  align-items:stretch;
+}
+
+.yAxis{
+  position:relative;
+  height:280px;
+}
+.yTick{
+  position:absolute;
+  left:0;
+  width:100%;
+  text-align:right;
+  padding-right:6px;
+  color:rgba(244,246,255,.78);
+  font-size:12px;
+  font-weight:900;
+  transform:translateY(50%);
+  text-shadow:0 2px 14px rgba(0,0,0,.35);
+}
+
+.plot{
+  position:relative;
+  height:280px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.18);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,0)),
+    rgba(0,0,0,.18);
+  overflow-x:auto;
+  overflow-y:hidden;
+}
+.gridLine{
+  position:absolute;
+  left:0; right:0;
+  height:1px;
+  background:rgba(255,255,255,.12);
+}
+.gridLine.bold{
+  background:rgba(255,255,255,.18);
+}
+.xBase{
+  position:absolute;
+  left:0; right:0;
+  bottom:44px;
+  height:2px;
+  background:rgba(255,255,255,.20);
+}
+
+.barsRow{
+  position:absolute;
+  left:0; right:0;
+  bottom:0;
+  height:100%;
   display:flex;
   align-items:flex-end;
-  overflow:hidden;
+  gap:12px;
+  padding:12px 12px 12px 12px;
+  min-width:520px; /* mobile scroll vẫn đẹp */
+}
+
+.barCol{
+  flex:1;
+  min-width:140px;
+  max-width:220px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  gap:8px;
   position:relative;
 }
+
+.barStack{
+  height:220px;
+  display:flex;
+  align-items:flex-end;
+  position:relative;
+  border-radius:16px;
+  overflow:hidden;
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(255,255,255,.14);
+}
+
 .barFill{
   width:100%;
   height:0%;
-  background:rgba(255,255,255,.85);
-  transition:height .35s ease;
+  border-radius:16px 16px 12px 12px;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
 }
-.barCount{
+
+.barTopBadge{
   position:absolute;
-  left:10px;
-  bottom:8px;
+  left:10px; top:10px;
+  font-size:12px;
+  font-weight:1000;
+  color:#fff;
+  background:rgba(0,0,0,.36);
+  border:1px solid rgba(255,255,255,.18);
+  padding:5px 10px;
+  border-radius:999px;
+  backdrop-filter: blur(4px);
+}
+
+.barCheck{
+  position:absolute;
+  right:10px; top:10px;
+  width:30px;height:30px;
+  border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:1000;
+  background:rgba(55,214,122,.95);
+  color:#04140a;
+  box-shadow:0 16px 36px rgba(55,214,122,.22);
+  opacity:0;
+  transform:scale(.92);
+  transition:opacity .2s ease, transform .2s ease;
+}
+
+.barXLabel{
+  height:44px;
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+  padding:0 4px 0 4px;
+}
+.barLetter{
+  width:28px; height:28px;
+  border-radius:10px;
+  background:rgba(255,255,255,.92);
+  color:#0b1020;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:1000;
+  border:1px solid rgba(0,0,0,.18);
+  flex:0 0 auto;
+}
+.barText{
+  color:rgba(244,246,255,.82);
   font-size:12px;
   font-weight:900;
-  color:#fff;
-  text-shadow:0 2px 10px rgba(0,0,0,.6);
-}
-.barLabel{
-  margin-top:8px;
-  font-size:12px;
-  color:var(--muted);
-  font-weight:800;
   line-height:1.2;
   display:-webkit-box;
   -webkit-line-clamp:2;
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
-.barCorrect .barBox{
-  border-color: rgba(55,214,122,.95);
-  box-shadow:0 0 0 2px rgba(55,214,122,.25) inset, 0 0 18px rgba(55,214,122,.25);
-}
-.barCorrect .barFill{ background:rgba(55,214,122,.95); }
 
-/* timer */
+@keyframes correctGlow {
+  0%{ box-shadow:0 0 0 0 rgba(55,214,122,.0), 0 0 0 0 rgba(55,214,122,.0); }
+  50%{ box-shadow:0 0 0 3px rgba(55,214,122,.18), 0 0 24px rgba(55,214,122,.18); }
+  100%{ box-shadow:0 0 0 2px rgba(55,214,122,.14), 0 0 20px rgba(55,214,122,.12); }
+}
+
+.barCol.isCorrect .barStack{
+  border-color:rgba(55,214,122,.65);
+  animation: correctGlow 1.2s ease-in-out infinite;
+}
+.barCol.isCorrect .barTopBadge{
+  border-color:rgba(55,214,122,.55);
+  background:rgba(55,214,122,.18);
+}
+.barCol.isCorrect .barCheck{
+  opacity:1;
+  transform:scale(1);
+}
+
+/* ================== Timer ================== */
 .qaCard{position:relative;overflow:hidden}
 .timer-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .timer-track{fill:none;stroke:rgba(255,255,255,.18);stroke-width:6}
@@ -591,15 +711,12 @@ th{color:var(--muted);font-weight:900}
   <video id="introVidBg" autoplay muted loop playsinline preload="auto" aria-hidden="true">
     <source src="/video/intro.mp4" type="video/mp4">
   </video>
-
   <video id="introVid" autoplay muted loop playsinline preload="auto">
     <source src="/video/intro.mp4" type="video/mp4">
   </video>
-
   <audio id="introMusic" preload="auto" loop playsinline>
     <source src="/audio/splash.mp3" type="audio/mpeg">
   </audio>
-
   <div id="introHint" class="intro-hint">Bấm để vào</div>
   <button id="introSound" class="intro-sound" type="button">🔊 Bật nhạc</button>
 </div>
@@ -629,11 +746,8 @@ th{color:var(--muted);font-weight:900}
       music.volume = 1.0;
       var p = music.play();
       if (p && typeof p.then === 'function') {
-        p.then(function(){
-          btnSound.style.display = 'none';
-        }).catch(function(){
-          btnSound.style.display = 'inline-block';
-        });
+        p.then(function(){ btnSound.style.display = 'none'; })
+         .catch(function(){ btnSound.style.display = 'inline-block'; });
       }
     }catch(e){}
   }
@@ -676,12 +790,8 @@ app.get("/health", (_, res) => res.json({ ok: true, preDelayMs: PRE_DELAY_MS }))
 app.get("/", (_, res) => {
   res.send(layout("Quiz Realtime", `
     <div class="card">
-      <div class="header">
-        <h1>${QUIZ.title}</h1>
-      </div>
-      <p class="small" style="margin:10px 0 0">
-        Người chơi vào <b>/play</b>. Host cần key vào <b>/host</b>.
-      </p>
+      <div class="header"><h1>${QUIZ.title}</h1></div>
+      <p class="small" style="margin:10px 0 0">Người chơi vào <b>/play</b>. Host cần key vào <b>/host</b>.</p>
       <hr/>
       <div class="row">
         <a class="btn" href="/play">Người chơi</a>
@@ -771,7 +881,7 @@ function hostPageHtml() {
         <div>
           <div class="small">Mã phòng</div>
           <div id="roomCode" class="bigcode">—</div>
-          <div class="small">Prep <b>0.5s</b> → thanh thời gian viền chạy <b>22s</b>.</div>
+          <div class="small">Flow: Kết thúc câu → Biểu đồ → <b>Công bố đáp án</b> → <b>Top 5</b> → Câu tiếp.</div>
         </div>
         <div class="row">
           <span class="pill">Người chơi: <b id="playersCount">0</b></span>
@@ -808,16 +918,39 @@ function hostPageHtml() {
     </div>
   </div>
 
-  <!-- ✅ Popup kết quả (biểu đồ) -->
+  <!-- ✅ Popup biểu đồ (KHÔNG tự tắt) -->
   <div id="resultPopup" class="overlay">
     <div class="modal card">
       <div class="header">
         <h1 style="font-size:18px;margin:0">Kết quả câu vừa rồi</h1>
-        <span class="pill"><span class="small">Biểu đồ lựa chọn</span></span>
+        <span class="pill"><span class="small">Kahoot-like chart</span></span>
       </div>
+
       <div id="resultMeta" class="small" style="margin-top:6px"></div>
-      <div id="resultChart" class="chart"></div>
-      <div id="resultCorrect" class="small" style="margin-top:10px"></div>
+
+      <div class="chartWrapV2">
+        <div class="chartV2">
+          <div id="yAxis" class="yAxis"></div>
+          <div class="plot">
+            <div id="gridLines"></div>
+            <div class="xBase"></div>
+            <div id="barsRow" class="barsRow"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultCorrect" class="small" style="margin-top:10px">
+        <span class="badge">Chưa công bố đáp án</span> • <span class="small">Nhấn “Công bố đáp án”</span>
+      </div>
+
+      <div class="row" style="justify-content:flex-end;margin-top:12px">
+        <button id="btnRevealAns" class="btn">Công bố đáp án</button>
+        <button id="btnShowTop5" class="btn" disabled>Hiện Top 5</button>
+      </div>
+
+      <div class="small" style="margin-top:8px">
+        Biểu đồ không tự tắt. Host điều khiển: <b>Công bố đáp án</b> → <b>Hiện Top 5</b>.
+      </div>
     </div>
   </div>
 
@@ -847,7 +980,11 @@ function hostPageHtml() {
     };
     function fmtMs(ms){ return (ms/1000).toFixed(2) + "s"; }
 
+    // màu đáp án
     var ANSWER_COLOR_POOL = ["#1D3557","#0B3D91","#264653","#283618","#2F3E46","#3A0CA3","#5A189A","#6A040F","#004E64","#1B263B","#2D1E2F","#006D77"];
+    // màu chart "tươi + sang"
+    var CHART_COLOR_POOL = ["#4CC9F0","#F72585","#B5179E","#7209B7","#3A0CA3","#4361EE","#4895EF","#4D908E","#F9C74F","#F8961E","#F94144","#90BE6D"];
+
     function shuffle(arr){
       var a = arr.slice();
       for (var i = a.length - 1; i > 0; i--) {
@@ -856,16 +993,16 @@ function hostPageHtml() {
       }
       return a;
     }
-    function pickAnswerColors(n){
-      var pool = shuffle(ANSWER_COLOR_POOL);
-      while (pool.length < n) pool = pool.concat(shuffle(ANSWER_COLOR_POOL));
-      return pool.slice(0, n);
+    function pickColors(pool, n){
+      var p = shuffle(pool);
+      while (p.length < n) p = p.concat(shuffle(pool));
+      return p.slice(0, n);
     }
     function applyAnswerColors(containerId){
       var wrap = $(containerId);
       if (!wrap) return;
       var nodes = wrap.querySelectorAll(".choice");
-      var colors = pickAnswerColors(nodes.length);
+      var colors = pickColors(ANSWER_COLOR_POOL, nodes.length);
       nodes.forEach(function(node, idx){
         node.style.background = colors[idx];
         node.style.borderColor = "rgba(255,255,255,.32)";
@@ -994,6 +1131,10 @@ function hostPageHtml() {
     var code = null;
     var state = null;
 
+    var resultShowing = false;
+    var answerRevealed = false;
+    var lastResult = null;
+
     /* ===== Popup Top5 ===== */
     var popupTimer = null;
     function hidePopup(){ document.getElementById("fastPopup").style.display = "none"; }
@@ -1011,85 +1152,184 @@ function hostPageHtml() {
       popupTimer = setTimeout(hidePopup, showMs || 7000);
     }
 
-    /* ===== Popup Result Chart ===== */
-    var resultTimer = null;
-    function hideResult(){ document.getElementById("resultPopup").style.display = "none"; }
-    function renderChart(containerId, choices, counts, correctIndex){
-      var wrap = document.getElementById(containerId);
-      if (!wrap) return;
-      wrap.innerHTML = "";
-
-      var max = 1;
-      for (var i=0;i<counts.length;i++) max = Math.max(max, counts[i] || 0);
-
-      for (var i=0;i<choices.length;i++){
-        var letter = String.fromCharCode(65+i);
-        var ctext = String(choices[i] || "");
-        var cnt = Number(counts[i] || 0);
-        var pct = Math.round((cnt / max) * 100);
-
-        var item = document.createElement("div");
-        item.className = "barItem" + (i === correctIndex ? " barCorrect" : "");
-
-        var box = document.createElement("div");
-        box.className = "barBox";
-
-        var fill = document.createElement("div");
-        fill.className = "barFill";
-        fill.style.height = pct + "%";
-
-        var num = document.createElement("div");
-        num.className = "barCount";
-        num.textContent = String(cnt);
-
-        box.appendChild(fill);
-        box.appendChild(num);
-
-        var lbl = document.createElement("div");
-        lbl.className = "barLabel";
-        lbl.textContent = letter + ": " + ctext;
-
-        item.appendChild(box);
-        item.appendChild(lbl);
-        wrap.appendChild(item);
-      }
+    function hideResult(){
+      document.getElementById("resultPopup").style.display = "none";
+      resultShowing = false;
+      answerRevealed = false;
+      lastResult = null;
+      setButtons();
     }
 
-    function showResultThenTop5(payload){
-      if (resultTimer) clearTimeout(resultTimer);
+    function showResult(payload){
+      lastResult = payload;
+      answerRevealed = false;
 
-      var choices = payload.choices || [];
-      var counts = payload.counts || [];
-      var correctIndex = Number(payload.correctIndex || 0);
       var answeredCount = Number(payload.answeredCount || 0);
       var totalPlayers = Number(payload.totalPlayers || 0);
 
       document.getElementById("resultMeta").textContent =
-        "Số lượt chọn: " + answeredCount + " / " + totalPlayers;
-
-      var correctLetter = String.fromCharCode(65 + correctIndex);
-      var correctText = (choices[correctIndex] != null) ? String(choices[correctIndex]) : "";
+        "Số lượt chọn: " + answeredCount + " / " + totalPlayers + " • Biểu đồ không tự tắt";
 
       document.getElementById("resultCorrect").innerHTML =
-        '<span class="badge">Đáp án đúng: <b>' + correctLetter + "</b></span> " +
-        '<span class="small" style="margin-left:8px">' + esc(correctText) + "</span>";
+        '<span class="badge">Chưa công bố đáp án</span> • <span class="small">Nhấn “Công bố đáp án”</span>';
 
-      renderChart("resultChart", choices, counts, correctIndex);
+      buildChartV2(payload.choices || [], payload.counts || [], totalPlayers);
 
       document.getElementById("resultPopup").style.display = "flex";
+      resultShowing = true;
+      setButtons();
+    }
 
-      var showMs = Number(payload.resultShowMs || 2500);
-      resultTimer = setTimeout(function(){
-        hideResult();
-        showPopup(payload.fastTop5 || [], payload.popupShowMs || 7000);
-      }, showMs);
+    // ===== Chart V2 (axis + grid + bounce + count-up) =====
+    function niceTop(maxVal){
+      if (!maxVal || maxVal <= 0) return 1;
+      var ticks = 4;
+      var step = Math.ceil(maxVal / ticks);
+      return step * ticks;
+    }
+
+    function easeOutBack(t){
+      var c1 = 1.70158;
+      var c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+
+    function buildChartV2(choices, counts, totalPlayers){
+      var yAxis = document.getElementById("yAxis");
+      var grid = document.getElementById("gridLines");
+      var barsRow = document.getElementById("barsRow");
+      yAxis.innerHTML = "";
+      grid.innerHTML = "";
+      barsRow.innerHTML = "";
+
+      var maxCount = 0;
+      for (var i=0;i<counts.length;i++) maxCount = Math.max(maxCount, Number(counts[i]||0));
+      var top = niceTop(maxCount);
+      var ticks = 4;
+
+      // y-axis labels + grid lines
+      for (var k=0;k<=ticks;k++){
+        var val = (top / ticks) * k;
+        var pct = (k / ticks) * 100;
+
+        var tick = document.createElement("div");
+        tick.className = "yTick";
+        tick.style.bottom = (pct) + "%";
+        tick.textContent = String(val);
+        yAxis.appendChild(tick);
+
+        var line = document.createElement("div");
+        line.className = "gridLine" + (k===0 ? " bold" : "");
+        line.style.bottom = "calc(" + pct + "% + 44px)"; // offset vì x-label 44px
+        grid.appendChild(line);
+      }
+
+      var colors = pickColors(CHART_COLOR_POOL, choices.length);
+
+      // build bars
+      for (var i=0;i<choices.length;i++){
+        var letter = String.fromCharCode(65+i);
+        var text = String(choices[i] || "");
+        var cnt = Number(counts[i] || 0);
+        var pct = totalPlayers ? Math.round((cnt / totalPlayers) * 100) : 0;
+        var targetH = top ? Math.round((cnt / top) * 100) : 0;
+        targetH = Math.max(0, Math.min(100, targetH));
+
+        var col = document.createElement("div");
+        col.className = "barCol";
+        col.setAttribute("data-i", String(i));
+
+        var stack = document.createElement("div");
+        stack.className = "barStack";
+
+        var fill = document.createElement("div");
+        fill.className = "barFill";
+        fill.style.height = "0%";
+        fill.style.background = "linear-gradient(180deg, " + colors[i] + ", rgba(0,0,0,0))";
+
+        var badge = document.createElement("div");
+        badge.className = "barTopBadge";
+        badge.textContent = "0 • 0%";
+
+        var check = document.createElement("div");
+        check.className = "barCheck";
+        check.textContent = "✓";
+
+        stack.appendChild(fill);
+        stack.appendChild(badge);
+        stack.appendChild(check);
+
+        var x = document.createElement("div");
+        x.className = "barXLabel";
+
+        var l = document.createElement("div");
+        l.className = "barLetter";
+        l.textContent = letter;
+
+        var t = document.createElement("div");
+        t.className = "barText";
+        t.textContent = text;
+
+        x.appendChild(l);
+        x.appendChild(t);
+
+        col.appendChild(stack);
+        col.appendChild(x);
+        barsRow.appendChild(col);
+
+        // animate with stagger
+        (function(fillEl, badgeEl, targetHeight, targetCount, targetPct, delay){
+          setTimeout(function(){
+            var dur = 820;
+            var t0 = performance.now();
+            function step(now){
+              var p = (now - t0) / dur;
+              if (p < 0) p = 0;
+              if (p > 1) p = 1;
+
+              var e = easeOutBack(p);
+              if (e < 0) e = 0;
+              if (e > 1.08) e = 1.08;
+
+              var h = Math.min(100, Math.round(targetHeight * e));
+              fillEl.style.height = h + "%";
+
+              var cc = Math.round(targetCount * Math.min(1, p));
+              var pp = Math.round(targetPct * Math.min(1, p));
+              badgeEl.textContent = cc + " • " + pp + "%";
+
+              if (p < 1) requestAnimationFrame(step);
+              else {
+                fillEl.style.height = targetHeight + "%";
+                badgeEl.textContent = targetCount + " • " + targetPct + "%";
+              }
+            }
+            requestAnimationFrame(step);
+          }, delay);
+        })(fill, badge, targetH, cnt, pct, 90*i);
+      }
+    }
+
+    function markCorrect(correctIndex){
+      var barsRow = document.getElementById("barsRow");
+      var cols = barsRow.querySelectorAll(".barCol");
+      cols.forEach(function(c){ c.classList.remove("isCorrect"); });
+      var el = barsRow.querySelector('.barCol[data-i="' + correctIndex + '"]');
+      if (el) el.classList.add("isCorrect");
     }
 
     function setButtons(){
       document.getElementById("btnCreate").disabled = !socket.connected;
       document.getElementById("btnStart").disabled  = !socket.connected || !code || (state && state.started);
       document.getElementById("btnReveal").disabled = !socket.connected || !code || !(state && state.started) || (state && state.ended);
-      document.getElementById("btnNext").disabled   = !socket.connected || !code || !(state && state.started) || (state && state.ended);
+
+      // ✅ khóa Next khi đang popup biểu đồ
+      document.getElementById("btnNext").disabled   =
+        !socket.connected || !code || !(state && state.started) || (state && state.ended) || resultShowing;
+
+      // popup control
+      document.getElementById("btnRevealAns").disabled = !resultShowing || answerRevealed || !code;
+      document.getElementById("btnShowTop5").disabled  = !resultShowing || !answerRevealed || !code;
     }
 
     socket.on("connect", function(){ setConn(true,"Đã kết nối"); setButtons(); });
@@ -1122,6 +1362,20 @@ function hostPageHtml() {
       socket.emit("host:next", { code: code }, function(resp){
         if (!resp || !resp.ok) return alert((resp && resp.error) || "Lỗi");
         hidePopup(); hideResult(); stopAudio(); stopTimer("qaCardHost"); setButtons();
+      });
+    };
+
+    document.getElementById("btnRevealAns").onclick = function(){
+      if (!code) return;
+      socket.emit("host:revealAnswer", { code: code }, function(resp){
+        if (!resp || !resp.ok) return alert((resp && resp.error) || "Không thể công bố đáp án");
+      });
+    };
+
+    document.getElementById("btnShowTop5").onclick = function(){
+      if (!code) return;
+      socket.emit("host:showTop5", { code: code }, function(resp){
+        if (!resp || !resp.ok) return alert((resp && resp.error) || "Không thể hiện Top 5");
       });
     };
 
@@ -1165,17 +1419,42 @@ function hostPageHtml() {
       startTimer("qaCardHost", startLocalMs, q.timeLimitSec * 1000);
     });
 
+    // ✅ Kết thúc câu => hiện biểu đồ (chưa công bố đáp án)
     socket.on("question:end", function(p){
       stopAudio(); stopTimer("qaCardHost");
-      hidePopup(); // ✅ top5 sẽ show sau khi chart show xong
+      hidePopup();
 
       var totalTop15 = p.totalTop15 || [];
       document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
         return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
       }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
 
-      // ✅ show chart trước, rồi mới show top5
-      showResultThenTop5(p);
+      showResult(p);
+    });
+
+    // ✅ Host công bố đáp án -> tất cả highlight cột đúng
+    socket.on("answer:reveal", function(p){
+      if (!lastResult || p.qIndex !== lastResult.qIndex) return;
+
+      answerRevealed = true;
+      var ci = Number(p.correctIndex || 0);
+      markCorrect(ci);
+
+      var choices = lastResult.choices || [];
+      var letter = String.fromCharCode(65 + ci);
+      var txt = (choices[ci] != null) ? String(choices[ci]) : "";
+
+      document.getElementById("resultCorrect").innerHTML =
+        '<span class="badge">Đáp án đúng: <b>' + letter + '</b></span>' +
+        '<span class="small" style="margin-left:8px">' + esc(txt) + '</span>';
+
+      setButtons();
+    });
+
+    // ✅ Host bấm "Hiện Top 5" => đóng chart và hiện top5
+    socket.on("top5:show", function(p){
+      hideResult();
+      showPopup(p.fastTop5 || [], p.popupShowMs || 7000);
     });
 
     socket.on("game:end", function(p){
@@ -1232,7 +1511,7 @@ function playPageHtml() {
         <span class="pill">Điểm: <b id="score">0</b></span>
         <span class="pill">Hạng (tạm tính): <b id="rank">—</b></span>
       </div>
-      <p class="small" style="margin:10px 0 0">Không hiển thị giây — xem thanh thời gian chạy quanh khung.</p>
+      <p class="small" style="margin:10px 0 0">Không hiện “đúng/sai” ngay. Chờ MC công bố.</p>
     </div>
 
     <div id="qaCardPlay" class="card qaCard">
@@ -1254,16 +1533,30 @@ function playPageHtml() {
     </div>
   </div>
 
-  <!-- ✅ Popup kết quả (biểu đồ) -->
+  <!-- ✅ Popup biểu đồ (KHÔNG tự tắt, chờ Host) -->
   <div id="resultPopup" class="overlay">
     <div class="modal card">
       <div class="header">
         <h1 style="font-size:18px;margin:0">Kết quả câu vừa rồi</h1>
-        <span class="pill"><span class="small">Biểu đồ lựa chọn</span></span>
+        <span class="pill"><span class="small">Kahoot-like chart</span></span>
       </div>
+
       <div id="resultMeta" class="small" style="margin-top:6px"></div>
-      <div id="resultChart" class="chart"></div>
-      <div id="resultCorrect" class="small" style="margin-top:10px"></div>
+
+      <div class="chartWrapV2">
+        <div class="chartV2">
+          <div id="yAxis" class="yAxis"></div>
+          <div class="plot">
+            <div id="gridLines"></div>
+            <div class="xBase"></div>
+            <div id="barsRow" class="barsRow"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultCorrect" class="small" style="margin-top:10px">
+        <span class="badge">Đang chờ Host công bố đáp án…</span>
+      </div>
     </div>
   </div>
 
@@ -1293,6 +1586,8 @@ function playPageHtml() {
     function fmtMs(ms){ return (ms/1000).toFixed(2) + "s"; }
 
     var ANSWER_COLOR_POOL = ["#1D3557","#0B3D91","#264653","#283618","#2F3E46","#3A0CA3","#5A189A","#6A040F","#004E64","#1B263B","#2D1E2F","#006D77"];
+    var CHART_COLOR_POOL = ["#4CC9F0","#F72585","#B5179E","#7209B7","#3A0CA3","#4361EE","#4895EF","#4D908E","#F9C74F","#F8961E","#F94144","#90BE6D"];
+
     function shuffle(arr){
       var a = arr.slice();
       for (var i = a.length - 1; i > 0; i--) {
@@ -1301,16 +1596,16 @@ function playPageHtml() {
       }
       return a;
     }
-    function pickAnswerColors(n){
-      var pool = shuffle(ANSWER_COLOR_POOL);
-      while (pool.length < n) pool = pool.concat(shuffle(ANSWER_COLOR_POOL));
-      return pool.slice(0, n);
+    function pickColors(pool, n){
+      var p = shuffle(pool);
+      while (p.length < n) p = p.concat(shuffle(pool));
+      return p.slice(0, n);
     }
     function applyAnswerColors(containerId){
       var wrap = document.getElementById(containerId);
       if (!wrap) return;
       var nodes = wrap.querySelectorAll(".choice");
-      var colors = pickAnswerColors(nodes.length);
+      var colors = pickColors(ANSWER_COLOR_POOL, nodes.length);
       nodes.forEach(function(node, idx){
         node.style.background = colors[idx];
         node.style.borderColor = "rgba(255,255,255,.32)";
@@ -1411,7 +1706,6 @@ function playPageHtml() {
       t.prog.style.opacity = "0";
     }
 
-    // Nhạc câu hỏi
     var audio = document.getElementById("qAudio");
     var soundBtn = document.getElementById("soundBtn");
     function stopAudio(){ try{ audio.pause(); audio.currentTime = 0; }catch(e){} }
@@ -1442,8 +1736,9 @@ function playPageHtml() {
     var myAnswered = false;
     var enableTimer = null;
 
-    function clearEnable(){ if (enableTimer) clearTimeout(enableTimer); enableTimer = null; }
+    var lastResult = null;
 
+    function clearEnable(){ if (enableTimer) clearTimeout(enableTimer); enableTimer = null; }
     function setAnswerEnabled(enabled){
       Array.prototype.forEach.call(document.getElementById("choicesPlay").querySelectorAll("button.choice"), function(b){
         if (!myAnswered) {
@@ -1453,7 +1748,6 @@ function playPageHtml() {
       });
     }
 
-    /* ===== Popup Top5 ===== */
     var popupTimer = null;
     function hidePopup(){ document.getElementById("fastPopup").style.display = "none"; }
     function showPopup(list, showMs){
@@ -1470,78 +1764,157 @@ function playPageHtml() {
       popupTimer = setTimeout(hidePopup, showMs || 7000);
     }
 
-    /* ===== Popup Result Chart ===== */
-    var resultTimer = null;
-    function hideResult(){ document.getElementById("resultPopup").style.display = "none"; }
-    function renderChart(containerId, choices, counts, correctIndex){
-      var wrap = document.getElementById(containerId);
-      if (!wrap) return;
-      wrap.innerHTML = "";
+    function hideResult(){ document.getElementById("resultPopup").style.display = "none"; lastResult=null; }
 
-      var max = 1;
-      for (var i=0;i<counts.length;i++) max = Math.max(max, counts[i] || 0);
+    function niceTop(maxVal){
+      if (!maxVal || maxVal <= 0) return 1;
+      var ticks = 4;
+      var step = Math.ceil(maxVal / ticks);
+      return step * ticks;
+    }
+    function easeOutBack(t){
+      var c1 = 1.70158;
+      var c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+
+    function buildChartV2(choices, counts, totalPlayers){
+      var yAxis = document.getElementById("yAxis");
+      var grid = document.getElementById("gridLines");
+      var barsRow = document.getElementById("barsRow");
+      yAxis.innerHTML = "";
+      grid.innerHTML = "";
+      barsRow.innerHTML = "";
+
+      var maxCount = 0;
+      for (var i=0;i<counts.length;i++) maxCount = Math.max(maxCount, Number(counts[i]||0));
+      var top = niceTop(maxCount);
+      var ticks = 4;
+
+      for (var k=0;k<=ticks;k++){
+        var val = (top / ticks) * k;
+        var pct = (k / ticks) * 100;
+
+        var tick = document.createElement("div");
+        tick.className = "yTick";
+        tick.style.bottom = (pct) + "%";
+        tick.textContent = String(val);
+        yAxis.appendChild(tick);
+
+        var line = document.createElement("div");
+        line.className = "gridLine" + (k===0 ? " bold" : "");
+        line.style.bottom = "calc(" + pct + "% + 44px)";
+        grid.appendChild(line);
+      }
+
+      var colors = pickColors(CHART_COLOR_POOL, choices.length);
 
       for (var i=0;i<choices.length;i++){
         var letter = String.fromCharCode(65+i);
-        var ctext = String(choices[i] || "");
+        var text = String(choices[i] || "");
         var cnt = Number(counts[i] || 0);
-        var pct = Math.round((cnt / max) * 100);
+        var pct = totalPlayers ? Math.round((cnt / totalPlayers) * 100) : 0;
+        var targetH = top ? Math.round((cnt / top) * 100) : 0;
+        targetH = Math.max(0, Math.min(100, targetH));
 
-        var item = document.createElement("div");
-        item.className = "barItem" + (i === correctIndex ? " barCorrect" : "");
+        var col = document.createElement("div");
+        col.className = "barCol";
+        col.setAttribute("data-i", String(i));
 
-        var box = document.createElement("div");
-        box.className = "barBox";
+        var stack = document.createElement("div");
+        stack.className = "barStack";
 
         var fill = document.createElement("div");
         fill.className = "barFill";
-        fill.style.height = pct + "%";
+        fill.style.height = "0%";
+        fill.style.background = "linear-gradient(180deg, " + colors[i] + ", rgba(0,0,0,0))";
 
-        var num = document.createElement("div");
-        num.className = "barCount";
-        num.textContent = String(cnt);
+        var badge = document.createElement("div");
+        badge.className = "barTopBadge";
+        badge.textContent = "0 • 0%";
 
-        box.appendChild(fill);
-        box.appendChild(num);
+        var check = document.createElement("div");
+        check.className = "barCheck";
+        check.textContent = "✓";
 
-        var lbl = document.createElement("div");
-        lbl.className = "barLabel";
-        lbl.textContent = letter + ": " + ctext;
+        stack.appendChild(fill);
+        stack.appendChild(badge);
+        stack.appendChild(check);
 
-        item.appendChild(box);
-        item.appendChild(lbl);
-        wrap.appendChild(item);
+        var x = document.createElement("div");
+        x.className = "barXLabel";
+
+        var l = document.createElement("div");
+        l.className = "barLetter";
+        l.textContent = letter;
+
+        var t = document.createElement("div");
+        t.className = "barText";
+        t.textContent = text;
+
+        x.appendChild(l);
+        x.appendChild(t);
+
+        col.appendChild(stack);
+        col.appendChild(x);
+
+        barsRow.appendChild(col);
+
+        (function(fillEl, badgeEl, targetHeight, targetCount, targetPct, delay){
+          setTimeout(function(){
+            var dur = 820;
+            var t0 = performance.now();
+            function step(now){
+              var p = (now - t0) / dur;
+              if (p < 0) p = 0;
+              if (p > 1) p = 1;
+
+              var e = easeOutBack(p);
+              if (e < 0) e = 0;
+              if (e > 1.08) e = 1.08;
+
+              var h = Math.min(100, Math.round(targetHeight * e));
+              fillEl.style.height = h + "%";
+
+              var cc = Math.round(targetCount * Math.min(1, p));
+              var pp = Math.round(targetPct * Math.min(1, p));
+              badgeEl.textContent = cc + " • " + pp + "%";
+
+              if (p < 1) requestAnimationFrame(step);
+              else {
+                fillEl.style.height = targetHeight + "%";
+                badgeEl.textContent = targetCount + " • " + targetPct + "%";
+              }
+            }
+            requestAnimationFrame(step);
+          }, delay);
+        })(fill, badge, targetH, cnt, pct, 90*i);
       }
     }
 
-    function showResultThenTop5(payload){
-      if (resultTimer) clearTimeout(resultTimer);
+    function markCorrect(correctIndex){
+      var barsRow = document.getElementById("barsRow");
+      var cols = barsRow.querySelectorAll(".barCol");
+      cols.forEach(function(c){ c.classList.remove("isCorrect"); });
+      var el = barsRow.querySelector('.barCol[data-i="' + correctIndex + '"]');
+      if (el) el.classList.add("isCorrect");
+    }
 
-      var choices = payload.choices || [];
-      var counts = payload.counts || [];
-      var correctIndex = Number(payload.correctIndex || 0);
+    function showResult(payload){
+      lastResult = payload;
+
       var answeredCount = Number(payload.answeredCount || 0);
       var totalPlayers = Number(payload.totalPlayers || 0);
 
       document.getElementById("resultMeta").textContent =
         "Số lượt chọn: " + answeredCount + " / " + totalPlayers;
 
-      var correctLetter = String.fromCharCode(65 + correctIndex);
-      var correctText = (choices[correctIndex] != null) ? String(choices[correctIndex]) : "";
-
       document.getElementById("resultCorrect").innerHTML =
-        '<span class="badge">Đáp án đúng: <b>' + correctLetter + "</b></span> " +
-        '<span class="small" style="margin-left:8px">' + esc(correctText) + "</span>";
+        '<span class="badge">Đang chờ Host công bố đáp án…</span>';
 
-      renderChart("resultChart", choices, counts, correctIndex);
+      buildChartV2(payload.choices || [], payload.counts || [], totalPlayers);
 
       document.getElementById("resultPopup").style.display = "flex";
-
-      var showMs = Number(payload.resultShowMs || 2500);
-      resultTimer = setTimeout(function(){
-        hideResult();
-        showPopup(payload.fastTop5 || [], payload.popupShowMs || 7000);
-      }, showMs);
     }
 
     document.getElementById("btnJoin").onclick = function(){
@@ -1603,8 +1976,6 @@ function playPageHtml() {
               document.getElementById("feedback").innerHTML = '<span class="bad">✖ ' + esc((resp && resp.error) || "Lỗi") + '</span>';
               return;
             }
-
-            // ✅ KHÔNG HIỆN ĐÚNG/SAI + ĐIỂM
             document.getElementById("score").textContent = String(resp.totalScore || 0);
             document.getElementById("rank").textContent = String(resp.rank || "—");
             document.getElementById("feedback").innerHTML = '<span class="badge">Đã gửi đáp án • chờ MC công bố…</span>';
@@ -1617,15 +1988,34 @@ function playPageHtml() {
       if (!joined) return;
 
       stopAudio(); stopTimer("qaCardPlay"); clearEnable();
-      hidePopup(); // ✅ top5 sẽ show sau khi chart show xong
+      hidePopup();
 
       var totalTop15 = p.totalTop15 || [];
       document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
         return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
       }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
 
-      // ✅ show chart trước, rồi mới show top5
-      showResultThenTop5(p);
+      showResult(p);
+    });
+
+    socket.on("answer:reveal", function(p){
+      if (!lastResult || p.qIndex !== lastResult.qIndex) return;
+
+      var ci = Number(p.correctIndex || 0);
+      markCorrect(ci);
+
+      var choices = lastResult.choices || [];
+      var letter = String.fromCharCode(65 + ci);
+      var txt = (choices[ci] != null) ? String(choices[ci]) : "";
+
+      document.getElementById("resultCorrect").innerHTML =
+        '<span class="badge">Đáp án đúng: <b>' + letter + '</b></span>' +
+        '<span class="small" style="margin-left:8px">' + esc(txt) + '</span>';
+    });
+
+    socket.on("top5:show", function(p){
+      hideResult();
+      showPopup(p.fastTop5 || [], p.popupShowMs || 7000);
     });
 
     socket.on("game:end", function(p){
@@ -1666,6 +2056,7 @@ io.on("connection", (socket) => {
       qStartAtMs: 0,
       timer: null,
       questionEndedFor: null,
+      answerRevealedFor: null,
       players: new Map(),
       qOrder: null,
       choiceMeta: new Map()
@@ -1692,7 +2083,6 @@ io.on("connection", (socket) => {
     room.choiceMeta = new Map();
     room.qIndex = 0;
 
-    // reset điểm
     for (const p of room.players.values()) {
       p.score = 0;
       p.lastAnswer = null;
@@ -1713,6 +2103,48 @@ io.on("connection", (socket) => {
     ack && ack({ ok: true });
   });
 
+  // ✅ Host công bố đáp án (mới)
+  socket.on("host:revealAnswer", ({ code }, ack) => {
+    if (!socketIsHost(socket)) return ack && ack({ ok: false, error: "Bạn cần HOST KEY để dùng Host." });
+
+    const room = rooms.get(code);
+    if (!room) return ack && ack({ ok: false, error: "Không tìm thấy phòng" });
+    if (room.hostId !== socket.id) return ack && ack({ ok: false, error: "Bạn không phải Host" });
+
+    if (room.questionEndedFor !== room.qIndex) return ack && ack({ ok: false, error: "Chưa kết thúc câu hỏi." });
+    if (room.answerRevealedFor === room.qIndex) return ack && ack({ ok: true });
+
+    const meta = ensureChoiceMeta(room);
+    room.answerRevealedFor = room.qIndex;
+
+    io.to(code).emit("answer:reveal", {
+      qIndex: room.qIndex,
+      correctIndex: meta.correctShuffledIndex
+    });
+
+    ack && ack({ ok: true });
+  });
+
+  // ✅ Host bấm để đóng biểu đồ + hiện Top5
+  socket.on("host:showTop5", ({ code }, ack) => {
+    if (!socketIsHost(socket)) return ack && ack({ ok: false, error: "Bạn cần HOST KEY để dùng Host." });
+
+    const room = rooms.get(code);
+    if (!room) return ack && ack({ ok: false, error: "Không tìm thấy phòng" });
+    if (room.hostId !== socket.id) return ack && ack({ ok: false, error: "Bạn không phải Host" });
+
+    if (room.questionEndedFor !== room.qIndex) return ack && ack({ ok: false, error: "Chưa kết thúc câu hỏi." });
+    if (room.answerRevealedFor !== room.qIndex) return ack && ack({ ok: false, error: "Chưa công bố đáp án." });
+
+    io.to(code).emit("top5:show", {
+      qIndex: room.qIndex,
+      fastTop5: getFastCorrectTop5(room),
+      popupShowMs: POPUP_SHOW_MS
+    });
+
+    ack && ack({ ok: true });
+  });
+
   socket.on("host:next", ({ code }, ack) => {
     if (!socketIsHost(socket)) return ack && ack({ ok: false, error: "Bạn cần HOST KEY để dùng Host." });
 
@@ -1722,9 +2154,10 @@ io.on("connection", (socket) => {
     if (!room.started) return ack && ack({ ok: false, error: "Chưa bắt đầu" });
 
     endQuestion(room);
-    room.qIndex += 1;
 
+    room.qIndex += 1;
     const total = room.qOrder ? room.qOrder.length : QUIZ.questions.length;
+
     if (room.qIndex >= total) {
       endGame(room);
       return ack && ack({ ok: true, ended: true });
@@ -1776,7 +2209,7 @@ io.on("connection", (socket) => {
     const selected = Number(choiceIndex);
 
     if (Number.isFinite(selected) && selected >= 0 && selected < meta.counts.length) {
-      meta.counts[selected] += 1; // ✅ đếm lựa chọn
+      meta.counts[selected] += 1;
     }
 
     const correct = selected === meta.correctShuffledIndex;
@@ -1788,7 +2221,7 @@ io.on("connection", (socket) => {
     const leaderboard = getTotalLeaderboard(room);
     const rank = leaderboard.findIndex((x) => x.socketId === socket.id) + 1;
 
-    // ✅ Không trả về correct/points cho người chơi nữa
+    // ✅ không trả correct/points
     ack && ack({ ok: true, totalScore: p.score, rank });
 
     let answered = 0;
