@@ -107,7 +107,6 @@ app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/audio", express.static(path.join(__dirname, "public", "audio"), { maxAge: "7d" }));
-app.use("/img", express.static(path.join(__dirname, "public", "img"), { maxAge: "7d" }));
 app.use("/video", express.static(path.join(__dirname, "public", "video"), { maxAge: "7d" }));
 
 const server = http.createServer(app);
@@ -175,7 +174,6 @@ function startQuestion(room) {
   if (room.timer) clearTimeout(room.timer);
 
   room.qStartAtMs = Date.now() + PRE_DELAY_MS;
-
   for (const p of room.players.values()) p.lastAnswer = null;
 
   io.to(room.code).emit("question:start", safeQuestionPayload(room));
@@ -222,7 +220,7 @@ function endGame(room) {
   broadcast(room);
 }
 
-/* ================== HTML LAYOUT (VIDEO BG + MOBILE SAFE + SPLASH MUSIC) ================== */
+/* ================== LAYOUT (Splash = VIDEO + NHẠC) ================== */
 function layout(title, bodyHtml) {
   return `<!doctype html>
 <html lang="vi">
@@ -234,9 +232,10 @@ function layout(title, bodyHtml) {
 <script>
 (function(){
   try{
-    var KEY = 'splash_seen_session_v1';
+    // ✅ splash chỉ hiện 1 lần trong 1 tab (session)
+    var KEY = 'intro_seen_session_v2';
     if (sessionStorage.getItem(KEY) === '1') {
-      document.documentElement.classList.add('splash-seen');
+      document.documentElement.classList.add('intro-seen');
     }
   }catch(e){}
 })();
@@ -244,32 +243,25 @@ function layout(title, bodyHtml) {
 
 <style>
 :root{
+  --bg:#050814;
   --text:#f4f6ff;
   --muted:rgba(244,246,255,.75);
   --line:rgba(255,255,255,.18);
-  --card:rgba(10,14,28,.60);
-  --card2:rgba(10,14,28,.45);
+  --card:rgba(10,14,28,.62);
+  --card2:rgba(10,14,28,.42);
   --btn:rgba(70,85,170,.55);
   --btn2:rgba(70,85,170,.70);
   --good:#37d67a;--bad:#ff5a5f;
 }
 *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
 html,body{height:100%}
-body{margin:0;color:var(--text);background:#000;overflow-x:hidden}
-
-/* video background */
-.bg-video{
-  position:fixed; inset:0;
-  width:100%; height:100%;
-  object-fit:cover;
-  z-index:-3;
-  filter:contrast(1.05) saturate(1.05);
-}
-.bg-overlay{
-  position:fixed; inset:0; z-index:-2;
+body{
+  margin:0;color:var(--text);
   background:
-    radial-gradient(1200px 900px at 20% 10%, rgba(0,0,0,.15), rgba(0,0,0,.62) 55%),
-    linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.65));
+    radial-gradient(1200px 800px at 20% 10%, rgba(40,60,140,.28), rgba(0,0,0,.72) 55%),
+    linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.75)),
+    var(--bg);
+  overflow-x:hidden;
 }
 
 .container{
@@ -282,16 +274,16 @@ body{margin:0;color:var(--text);background:#000;overflow-x:hidden}
 }
 
 .header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-h1{margin:0;font-size:clamp(18px, 4.5vw, 22px);line-height:1.2;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+h1{margin:0;font-size:clamp(18px,4.6vw,22px);line-height:1.2;text-shadow:0 2px 14px rgba(0,0,0,.45)}
 h2{text-shadow:0 2px 14px rgba(0,0,0,.45)}
-.small{font-size:clamp(12px, 3.2vw, 13px);color:var(--muted)}
-label{font-size:clamp(12px, 3.2vw, 13px);color:var(--muted)}
+.small{font-size:clamp(12px,3.2vw,13px);color:var(--muted)}
+label{font-size:clamp(12px,3.2vw,13px);color:var(--muted)}
 
 .card{
   background:linear-gradient(180deg, var(--card), var(--card2));
   border:1px solid var(--line);
   border-radius:16px;
-  padding:clamp(12px, 2.2vw, 16px);
+  padding:clamp(12px,2.2vw,16px);
   box-shadow:0 10px 40px rgba(0,0,0,.35);
   backdrop-filter: blur(6px);
 }
@@ -300,7 +292,6 @@ label{font-size:clamp(12px, 3.2vw, 13px);color:var(--muted)}
 @media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
 
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-
 input{
   width:100%;padding:10px 12px;border-radius:12px;
   border:1px solid var(--line);
@@ -326,8 +317,7 @@ input{
 }
 .dot{width:8px;height:8px;border-radius:999px;background:var(--muted);display:inline-block}
 .dot.good{background:var(--good)} .dot.bad{background:var(--bad)}
-
-.bigcode{font-size:clamp(22px, 7vw, 32px);letter-spacing:3px;font-weight:900;word-break:break-word}
+.bigcode{font-size:clamp(22px,7vw,32px);letter-spacing:3px;font-weight:900;word-break:break-word}
 
 hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 
@@ -377,34 +367,69 @@ th{color:var(--muted);font-weight:900}
   stroke-linecap:round;stroke-linejoin:round;opacity:0
 }
 
-/* splash */
-.splash{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:999999;padding:0}
-.splash img{width:100%;height:100%;object-fit:cover;display:block}
-.splash.hide{opacity:0;pointer-events:none;transition:opacity .45s ease}
-.splash-hint{
-  position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.25);
-  color:#fff;padding:6px 10px;border-radius:999px;font-size:12px;z-index:1000000
+/* ✅ INTRO VIDEO SPLASH */
+.intro{
+  position:fixed; inset:0;
+  background:#000;
+  display:flex; align-items:center; justify-content:center;
+  z-index:999999;
 }
+.intro video{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+}
+.intro::after{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.55));
+  pointer-events:none;
+}
+.intro-hint{
+  position:fixed;
+  bottom:14px; left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.25);
+  color:#fff;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:12px;
+  z-index:1000000;
+}
+.intro-sound{
+  position:fixed;
+  top:14px; right:14px;
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.25);
+  color:#fff;
+  padding:8px 10px;
+  border-radius:999px;
+  font-size:12px;
+  z-index:1000000;
+  cursor:pointer;
+}
+.intro.hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
 
-/* show content after splash */
-.splash-seen .container{visibility:visible}
-.splash-seen #splash{display:none !important}
+/* ✅ show content after intro */
+.intro-seen .container{visibility:visible}
+.intro-seen #intro{display:none !important}
 </style>
 </head>
 
 <body>
-<video class="bg-video" autoplay muted loop playsinline preload="auto">
-  <source src="/video/bg.mp4" type="video/mp4">
-</video>
-<div class="bg-overlay"></div>
+<div id="intro" class="intro" aria-label="Intro video">
+  <video id="introVid" autoplay muted loop playsinline preload="auto">
+    <source src="/video/intro.mp4" type="video/mp4">
+  </video>
 
-<div id="splash" class="splash">
-  <img src="/img/splash.png" alt="Splash"/>
-  <div id="splashHint" class="splash-hint">Bấm để vào</div>
-  <audio id="splashAudio" preload="auto" loop playsinline>
+  <!-- ✅ NHẠC SPLASH (GIỮ LẠI) -->
+  <audio id="introMusic" preload="auto" loop playsinline>
     <source src="/audio/splash.mp3" type="audio/mpeg">
   </audio>
+
+  <div id="introHint" class="intro-hint">Bấm để vào</div>
+  <button id="introSound" class="intro-sound" type="button">🔊 Bật nhạc</button>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -412,53 +437,66 @@ th{color:var(--muted);font-weight:900}
 
 <script>
 (function(){
-  var splash = document.getElementById('splash');
-  if(!splash) return;
-  if (document.documentElement.classList.contains('splash-seen')) return;
+  var intro = document.getElementById('intro');
+  if(!intro) return;
+  if (document.documentElement.classList.contains('intro-seen')) return;
 
-  var hint = document.getElementById('splashHint');
-  var audio = document.getElementById('splashAudio');
-  var audioStarted = false;
+  var KEY = 'intro_seen_session_v2';
+  var vid = document.getElementById('introVid');
+  var music = document.getElementById('introMusic');
+  var hint = document.getElementById('introHint');
+  var btnSound = document.getElementById('introSound');
 
-  function stopSplashAudio(){
-    if (!audio) return;
-    try{ audio.pause(); audio.currentTime = 0; }catch(e){}
-  }
+  // video chạy muted để autoplay chắc chắn
+  try{ vid.play().catch(function(){}); }catch(e){}
 
-  // thử autoplay (có thể bị chặn)
-  if (audio) {
+  // thử phát nhạc splash (có thể bị chặn)
+  var musicStarted = false;
+  function tryPlayMusic(){
+    if (!music) return;
     try{
-      audio.volume = 1.0;
-      var p = audio.play();
+      music.volume = 1.0;
+      var p = music.play();
       if (p && typeof p.then === 'function') {
-        p.then(function(){ audioStarted = true; })
-         .catch(function(){ audioStarted = false; });
+        p.then(function(){
+          musicStarted = true;
+          btnSound.style.display = 'none';
+        }).catch(function(){
+          musicStarted = false;
+          btnSound.style.display = 'inline-block';
+        });
       }
     }catch(e){}
   }
+  tryPlayMusic();
 
-  function hideSplash(){
-    try{ sessionStorage.setItem('splash_seen_session_v1','1'); }catch(e){}
-    stopSplashAudio();
-    document.documentElement.classList.add('splash-seen');
-    splash.classList.add('hide');
-    setTimeout(function(){ if(splash) splash.remove(); }, 500);
+  // nút bật nhạc (khi browser chặn autoplay)
+  btnSound.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    try{
+      music.play().then(function(){
+        musicStarted = true;
+        btnSound.style.display = 'none';
+        if (hint) hint.textContent = "Bấm để vào";
+      }).catch(function(){});
+    }catch(e){}
+  });
+
+  function stopAll(){
+    try{ vid.pause(); }catch(e){}
+    try{ if (music){ music.pause(); music.currentTime = 0; } }catch(e){}
   }
 
-  // click: lần 1 bật nhạc (nếu bị chặn), lần 2 vào
-  splash.addEventListener('click', function(){
-    if (!audio) return hideSplash();
-    if (!audioStarted) {
-      audio.play().then(function(){
-        audioStarted = true;
-        if (hint) hint.textContent = "Nhạc đã bật ✅ Bấm lần nữa để vào";
-      }).catch(function(){
-        if (hint) hint.textContent = "Trình duyệt chặn âm thanh. Bật âm lượng rồi bấm lại.";
-      });
-      return;
-    }
-    hideSplash();
-  });
+  function hideIntro(){
+    try{ sessionStorage.setItem(KEY,'1'); }catch(e){}
+    stopAll();
+    document.documentElement.classList.add('intro-seen');
+    intro.classList.add('hide');
+    setTimeout(function(){ if(intro) intro.remove(); }, 400);
+  }
+
+  // click bất kỳ: vào web + tắt nhạc/video
+  intro.addEventListener('click', hideIntro);
 })();
 </script>
 
@@ -470,10 +508,7 @@ th{color:var(--muted);font-weight:900}
 app.get("/health", (_, res) => res.json({ ok: true, preDelayMs: PRE_DELAY_MS }));
 
 app.get("/", (_, res) => {
-  res.send(
-    layout(
-      "Quiz Realtime",
-      `
+  res.send(layout("Quiz Realtime", `
     <div class="card">
       <div class="header">
         <h1>${QUIZ.title}</h1>
@@ -487,16 +522,11 @@ app.get("/", (_, res) => {
         <a class="btn" href="/host">Host (cần key)</a>
       </div>
     </div>
-  `
-    )
-  );
+  `));
 });
 
 app.get("/host-login", (req, res) => {
-  res.send(
-    layout(
-      "Nhập Host Key",
-      `
+  res.send(layout("Nhập Host Key", `
     <div class="card">
       <h1>Nhập Host Key</h1>
       <p class="small">Chỉ người có key mới vào được trang Host.</p>
@@ -511,18 +541,13 @@ app.get("/host-login", (req, res) => {
       <hr/>
       <p class="small">Vào nhanh: <b>/host?key=YOUR_KEY</b></p>
     </div>
-  `
-    )
-  );
+  `));
 });
 
 app.post("/host-login", (req, res) => {
   const key = String(req.body.key || "").trim();
   if (!key || key !== HOST_KEY) {
-    return res.send(
-      layout(
-        "Sai Host Key",
-        `
+    return res.send(layout("Sai Host Key", `
       <div class="card">
         <h1 class="bad">Sai Host Key</h1>
         <p class="small">Vui lòng thử lại.</p>
@@ -531,9 +556,7 @@ app.post("/host-login", (req, res) => {
           <a class="btn" href="/play">Tôi là người chơi</a>
         </div>
       </div>
-    `
-      )
-    );
+    `));
   }
   setHostCookie(req, res);
   return res.redirect("/host");
@@ -544,722 +567,721 @@ app.get("/host-logout", (req, res) => {
   return res.redirect("/play");
 });
 
-// /host?key=... set cookie nhanh
-app.get(
-  "/host",
-  (req, res, next) => {
-    const k = String(req.query.key || "").trim();
-    if (k && k === HOST_KEY) {
-      setHostCookie(req, res);
-      return res.redirect("/host");
-    }
-    return next();
-  },
-  requireHost,
-  (req, res) => {
-    res.send(
-      layout(
-        "Host",
-        `
-    <div class="header">
-      <h1>Host (MC)</h1>
-      <div class="row">
-        <a class="pill" href="/play">Mở trang Người chơi</a>
-        <a class="pill" href="/host-logout">Đăng xuất Host</a>
-        <button id="soundBtn" class="pill" style="display:none;background:transparent;cursor:pointer">🔊 Bật âm thanh</button>
-        <span class="pill"><span class="dot" id="connDot"></span><span id="connText">Đang kết nối…</span></span>
-      </div>
-    </div>
-
-    <audio id="qAudio" preload="auto" src="/audio/olympia.mp3"></audio>
-
-    <div class="grid">
-      <div class="card">
-        <div class="row" style="justify-content:space-between;align-items:flex-start">
-          <div>
-            <div class="small">Mã phòng</div>
-            <div id="roomCode" class="bigcode">—</div>
-            <div class="small">Prep <b>0.5s</b> → thanh thời gian viền chạy <b>22s</b>.</div>
-          </div>
-          <div class="row">
-            <span class="pill">Người chơi: <b id="playersCount">0</b></span>
-            <span class="pill">Câu: <b id="qCounter">—</b></span>
-          </div>
-        </div>
-        <hr/>
-        <div class="row">
-          <button id="btnCreate" class="btn" disabled>Tạo phòng</button>
-          <button id="btnStart" class="btn" disabled>Bắt đầu</button>
-          <button id="btnReveal" class="btn" disabled>Kết thúc câu</button>
-          <button id="btnNext" class="btn" disabled>Câu tiếp theo</button>
-        </div>
-      </div>
-
-      <div id="qaCardHost" class="card qaCard">
-        <div class="small">Câu hỏi đang chạy</div>
-        <h2 id="qText" style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">—</h2>
-        <div class="row" style="margin-top:8px">
-          <span class="badge">Đã trả lời: <b id="qAnswered">0</b></span>
-        </div>
-        <div id="choicesHost" class="choices"></div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px">
-      <div class="small">Bảng xếp hạng tổng điểm</div>
-      <h2 style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">Top 15 (tích lũy)</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Tên</th><th>Tổng điểm</th></tr></thead>
-          <tbody id="lbBody"><tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="fastPopup" class="overlay">
-      <div class="modal card">
-        <div class="header">
-          <h1 style="font-size:18px;margin:0">Top 5 đúng & nhanh (câu vừa xong)</h1>
-          <span class="pill"><span class="small">Tự tắt sau 7 giây</span></span>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Tên</th><th>Thời gian</th><th>+Điểm</th></tr></thead>
-            <tbody id="fastBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <script>
-      var socket = io();
-      var $ = function(id){ return document.getElementById(id); };
-      var esc = function(s){
-        return String(s).replace(/[&<>"']/g, function(m){
-          return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]);
-        });
-      };
-      function fmtMs(ms){ return (ms/1000).toFixed(2) + "s"; }
-
-      var ANSWER_COLOR_POOL = ["#1D3557","#0B3D91","#264653","#283618","#2F3E46","#3A0CA3","#5A189A","#6A040F","#004E64","#1B263B","#2D1E2F","#006D77"];
-      function shuffle(arr){
-        var a = arr.slice();
-        for (var i = a.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var t = a[i]; a[i] = a[j]; a[j] = t;
-        }
-        return a;
-      }
-      function pickAnswerColors(n){
-        var pool = shuffle(ANSWER_COLOR_POOL);
-        while (pool.length < n) pool = pool.concat(shuffle(ANSWER_COLOR_POOL));
-        return pool.slice(0, n);
-      }
-      function applyAnswerColors(containerId){
-        var wrap = $(containerId);
-        if (!wrap) return;
-        var nodes = wrap.querySelectorAll(".choice");
-        var colors = pickAnswerColors(nodes.length);
-        nodes.forEach(function(node, idx){
-          node.style.background = colors[idx];
-          node.style.borderColor = "rgba(255,255,255,.32)";
-        });
-      }
-
-      function ensureTimer(cardId){
-        var card = $(cardId);
-        if (!card) return null;
-        if (card.__timerObj) return card.__timerObj;
-
-        var ns = "http://www.w3.org/2000/svg";
-        var svg = document.createElementNS(ns, "svg");
-        svg.setAttribute("class", "timer-svg");
-
-        var track = document.createElementNS(ns, "rect");
-        track.setAttribute("class", "timer-track");
-
-        var prog = document.createElementNS(ns, "rect");
-        prog.setAttribute("class", "timer-prog");
-
-        svg.appendChild(track);
-        svg.appendChild(prog);
-        card.appendChild(svg);
-
-        var obj = { card: card, svg: svg, track: track, prog: prog, len: 0, raf: 0 };
-
-        obj.resize = function(){
-          var w = card.clientWidth;
-          var h = card.clientHeight;
-          var sw = 6;
-          var r = 16;
-          var rx = Math.max(0, r - sw/2);
-
-          svg.setAttribute("viewBox", "0 0 " + w + " " + h);
-
-          track.setAttribute("x", sw/2);
-          track.setAttribute("y", sw/2);
-          track.setAttribute("width", Math.max(0, w - sw));
-          track.setAttribute("height", Math.max(0, h - sw));
-          track.setAttribute("rx", rx);
-          track.setAttribute("ry", rx);
-
-          prog.setAttribute("x", sw/2);
-          prog.setAttribute("y", sw/2);
-          prog.setAttribute("width", Math.max(0, w - sw));
-          prog.setAttribute("height", Math.max(0, h - sw));
-          prog.setAttribute("rx", rx);
-          prog.setAttribute("ry", rx);
-
-          try{
-            obj.len = prog.getTotalLength();
-            prog.style.strokeDasharray = String(obj.len);
-          }catch(e){}
-        };
-
-        window.addEventListener("resize", function(){ obj.resize(); });
-        obj.resize();
-
-        card.__timerObj = obj;
-        return obj;
-      }
-
-      function startTimer(cardId, startAtMs, durationMs){
-        var t = ensureTimer(cardId);
-        if (!t || !t.len) return;
-
-        t.resize();
-        if (t.raf) cancelAnimationFrame(t.raf);
-
-        var len = t.len;
-        t.prog.style.opacity = "1";
-        t.prog.style.strokeDasharray = String(len);
-        t.prog.style.strokeDashoffset = String(len);
-
-        function step(){
-          var now = Date.now();
-          var p = (now - startAtMs) / durationMs;
-
-          if (p < 0) {
-            t.prog.style.strokeDashoffset = String(len);
-            t.raf = requestAnimationFrame(step);
-            return;
-          }
-
-          p = Math.max(0, Math.min(1, p));
-          t.prog.style.strokeDashoffset = String(len * (1 - p));
-          if (p < 1) t.raf = requestAnimationFrame(step);
-        }
-        t.raf = requestAnimationFrame(step);
-      }
-
-      function stopTimer(cardId){
-        var t = ensureTimer(cardId);
-        if (!t) return;
-        if (t.raf) cancelAnimationFrame(t.raf);
-        t.raf = 0;
-        t.prog.style.opacity = "0";
-      }
-
-      var audio = document.getElementById("qAudio");
-      var soundBtn = document.getElementById("soundBtn");
-      function stopAudio(){ try{ audio.pause(); audio.currentTime = 0; }catch(e){} }
-      function playAudioAfter(delayMs){
-        stopAudio();
-        soundBtn.style.display = "none";
-        setTimeout(function(){
-          audio.play().catch(function(){ soundBtn.style.display = "inline-flex"; });
-        }, delayMs);
-      }
-      soundBtn.onclick = function(){
-        audio.play().then(function(){ soundBtn.style.display = "none"; }).catch(function(){});
-      };
-
-      var dot = document.getElementById("connDot");
-      var text = document.getElementById("connText");
-      function setConn(ok, msg){
-        dot.classList.remove("good","bad");
-        dot.classList.add(ok ? "good" : "bad");
-        text.textContent = msg;
-      }
-
-      var code = null;
-      var state = null;
-
-      var popupTimer = null;
-      function hidePopup(){ document.getElementById("fastPopup").style.display = "none"; }
-      function showPopup(list, showMs){
-        if (popupTimer) clearTimeout(popupTimer);
-        var fastBody = document.getElementById("fastBody");
-        if (!list || !list.length){
-          fastBody.innerHTML = '<tr><td colspan="4" class="small">Không có ai trả lời đúng.</td></tr>';
-        } else {
-          fastBody.innerHTML = list.map(function(x,i){
-            return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + fmtMs(x.elapsedMs) + "</td><td>+" + (x.points || 0) + "</td></tr>";
-          }).join("");
-        }
-        document.getElementById("fastPopup").style.display = "flex";
-        popupTimer = setTimeout(hidePopup, showMs || 7000);
-      }
-
-      function setButtons(){
-        document.getElementById("btnCreate").disabled = !socket.connected;
-        document.getElementById("btnStart").disabled  = !socket.connected || !code || (state && state.started);
-        document.getElementById("btnReveal").disabled = !socket.connected || !code || !(state && state.started) || (state && state.ended);
-        document.getElementById("btnNext").disabled   = !socket.connected || !code || !(state && state.started) || (state && state.ended);
-      }
-
-      socket.on("connect", function(){ setConn(true,"Đã kết nối"); setButtons(); });
-      socket.on("disconnect", function(){ setConn(false,"Mất kết nối"); setButtons(); });
-      socket.on("connect_error", function(){ setConn(false,"Lỗi kết nối"); setButtons(); });
-
-      document.getElementById("btnCreate").onclick = function(){
-        socket.emit("host:createRoom", {}, function(resp){
-          if (!resp || !resp.ok) return alert((resp && resp.error) || "Không tạo được phòng");
-          code = resp.code;
-          document.getElementById("roomCode").textContent = code;
-          hidePopup(); stopAudio(); stopTimer("qaCardHost"); setButtons();
-        });
-      };
-
-      document.getElementById("btnStart").onclick = function(){
-        socket.emit("host:start", { code: code }, function(resp){
-          if (!resp || !resp.ok) return alert((resp && resp.error) || "Không thể bắt đầu");
-          hidePopup(); stopAudio(); stopTimer("qaCardHost"); setButtons();
-        });
-      };
-
-      document.getElementById("btnReveal").onclick = function(){
-        socket.emit("host:reveal", { code: code }, function(resp){
-          if (!resp || !resp.ok) alert((resp && resp.error) || "Lỗi");
-        });
-      };
-
-      document.getElementById("btnNext").onclick = function(){
-        socket.emit("host:next", { code: code }, function(resp){
-          if (!resp || !resp.ok) return alert((resp && resp.error) || "Lỗi");
-          hidePopup(); stopAudio(); stopTimer("qaCardHost"); setButtons();
-        });
-      };
-
-      socket.on("players:count", function(p){
-        document.getElementById("playersCount").textContent = String((p && p.count) || 0);
-      });
-
-      socket.on("room:state", function(s){
-        state = s;
-        if (state && state.total != null && state.qIndex != null) {
-          document.getElementById("qCounter").textContent = String(state.qIndex + 1) + "/" + String(state.total);
-        }
-        setButtons();
-      });
-
-      socket.on("question:progress", function(p){
-        document.getElementById("qAnswered").textContent = String(p.answered) + "/" + String(p.totalPlayers);
-      });
-
-      socket.on("question:start", function(q){
-        hidePopup(); stopAudio(); stopTimer("qaCardHost");
-
-        document.getElementById("qText").textContent = q.text;
-        document.getElementById("qAnswered").textContent = "0";
-
-        document.getElementById("choicesHost").innerHTML = q.choices.map(function(c,i){
-          var letter = String.fromCharCode(65+i);
-          return '<div class="choice"><span class="opt">' + letter + '</span><span class="txt">' + esc(c) + '</span></div>';
-        }).join("");
-
-        applyAnswerColors("choicesHost");
-
-        var delay = Math.max(0, q.startedAtMs - (q.serverNowMs || Date.now()));
-        var startLocalMs = Date.now() + delay;
-
-        playAudioAfter(delay);
-        startTimer("qaCardHost", startLocalMs, q.timeLimitSec * 1000);
-      });
-
-      socket.on("question:end", function(p){
-        stopAudio(); stopTimer("qaCardHost");
-
-        var totalTop15 = p.totalTop15 || [];
-        document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
-          return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
-        }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
-
-        showPopup(p.fastTop5 || [], p.popupShowMs || 7000);
-      });
-
-      socket.on("game:end", function(p){
-        stopAudio(); stopTimer("qaCardHost");
-
-        var totalTop15 = p.totalTop15 || [];
-        document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
-          return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
-        }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
-
-        alert("Kết thúc game! Tổng người chơi: " + p.totalPlayers);
-      });
-
-      setButtons();
-    </script>
-  `
-      )
-    );
+app.get("/host", (req, res, next) => {
+  const k = String(req.query.key || "").trim();
+  if (k && k === HOST_KEY) {
+    setHostCookie(req, res);
+    return res.redirect("/host");
   }
-);
+  return next();
+}, requireHost, (req, res) => {
+  res.send(layout("Host", hostPageHtml()));
+});
 
 app.get("/play", (_, res) => {
-  res.send(
-    layout(
-      "Người chơi",
-      `
-    <div class="header">
-      <h1>Người chơi</h1>
-      <div class="row">
-        <a class="pill" href="/host">Host (cần key)</a>
-        <button id="soundBtn" class="pill" style="display:none;background:transparent;cursor:pointer">🔊 Bật âm thanh</button>
-        <span class="pill"><span class="dot" id="connDot"></span><span id="connText">Đang kết nối…</span></span>
-      </div>
+  res.send(layout("Người chơi", playPageHtml()));
+});
+
+/* ================== PAGES HTML ================== */
+function hostPageHtml() {
+  return `
+  <div class="header">
+    <h1>Host (MC)</h1>
+    <div class="row">
+      <a class="pill" href="/play">Mở trang Người chơi</a>
+      <a class="pill" href="/host-logout">Đăng xuất Host</a>
+      <button id="soundBtn" class="pill" style="display:none;background:transparent;cursor:pointer">🔊 Bật âm thanh</button>
+      <span class="pill"><span class="dot" id="connDot"></span><span id="connText">Đang kết nối…</span></span>
     </div>
+  </div>
 
-    <audio id="qAudio" preload="auto" src="/audio/olympia.mp3"></audio>
+  <!-- ✅ NHẠC CÂU HỎI (GIỮ NGUYÊN) -->
+  <audio id="qAudio" preload="auto" src="/audio/olympia.mp3"></audio>
 
-    <div class="grid">
-      <div class="card">
-        <div class="small">Tham gia phòng</div>
-        <div class="row" style="margin-top:8px">
-          <div style="flex:1;min-width:220px">
-            <label>Mã phòng</label>
-            <input id="code" placeholder="ABC123"/>
-          </div>
-          <div style="flex:1;min-width:220px">
-            <label>Tên của bạn</label>
-            <input id="name" placeholder="Nguyễn Văn A"/>
-          </div>
+  <div class="grid">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="small">Mã phòng</div>
+          <div id="roomCode" class="bigcode">—</div>
+          <div class="small">Prep <b>0.5s</b> → thanh thời gian viền chạy <b>22s</b>.</div>
         </div>
-        <div class="row" style="margin-top:10px">
-          <button id="btnJoin" class="btn">Tham gia</button>
-          <span id="joinStatus" class="small"></span>
-        </div>
-        <hr/>
         <div class="row">
-          <span class="pill">Điểm: <b id="score">0</b></span>
-          <span class="pill">Hạng (tạm tính): <b id="rank">—</b></span>
+          <span class="pill">Người chơi: <b id="playersCount">0</b></span>
+          <span class="pill">Câu: <b id="qCounter">—</b></span>
         </div>
-        <p class="small" style="margin:10px 0 0">Không hiển thị giây — xem thanh thời gian chạy quanh khung.</p>
       </div>
-
-      <div id="qaCardPlay" class="card qaCard">
-        <div class="small">Câu hỏi</div>
-        <h2 id="qText" style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">—</h2>
-        <div id="choicesPlay" class="choices"></div>
-        <div id="feedback" class="small" style="margin-top:10px"></div>
+      <hr/>
+      <div class="row">
+        <button id="btnCreate" class="btn" disabled>Tạo phòng</button>
+        <button id="btnStart" class="btn" disabled>Bắt đầu</button>
+        <button id="btnReveal" class="btn" disabled>Kết thúc câu</button>
+        <button id="btnNext" class="btn" disabled>Câu tiếp theo</button>
       </div>
     </div>
 
-    <div class="card" style="margin-top:16px">
-      <div class="small">Bảng xếp hạng tổng điểm</div>
-      <h2 style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">Top 15 (tích lũy)</h2>
+    <div id="qaCardHost" class="card qaCard">
+      <div class="small">Câu hỏi đang chạy</div>
+      <h2 id="qText" style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">—</h2>
+      <div class="row" style="margin-top:8px">
+        <span class="badge">Đã trả lời: <b id="qAnswered">0</b></span>
+      </div>
+      <div id="choicesHost" class="choices"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="small">Bảng xếp hạng tổng điểm</div>
+    <h2 style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">Top 15 (tích lũy)</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Tên</th><th>Tổng điểm</th></tr></thead>
+        <tbody id="lbBody"><tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="fastPopup" class="overlay">
+    <div class="modal card">
+      <div class="header">
+        <h1 style="font-size:18px;margin:0">Top 5 đúng & nhanh (câu vừa xong)</h1>
+        <span class="pill"><span class="small">Tự tắt sau 7 giây</span></span>
+      </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>#</th><th>Tên</th><th>Tổng điểm</th></tr></thead>
-          <tbody id="lbBody"><tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr></tbody>
+          <thead><tr><th>#</th><th>Tên</th><th>Thời gian</th><th>+Điểm</th></tr></thead>
+          <tbody id="fastBody"></tbody>
         </table>
       </div>
     </div>
+  </div>
 
-    <div id="fastPopup" class="overlay">
-      <div class="modal card">
-        <div class="header">
-          <h1 style="font-size:18px;margin:0">Top 5 đúng & nhanh (câu vừa xong)</h1>
-          <span class="pill"><span class="small">Tự tắt sau 7 giây</span></span>
+  <script>
+    var socket = io();
+    var $ = function(id){ return document.getElementById(id); };
+    var esc = function(s){
+      return String(s).replace(/[&<>"']/g, function(m){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]);
+      });
+    };
+    function fmtMs(ms){ return (ms/1000).toFixed(2) + "s"; }
+
+    var ANSWER_COLOR_POOL = ["#1D3557","#0B3D91","#264653","#283618","#2F3E46","#3A0CA3","#5A189A","#6A040F","#004E64","#1B263B","#2D1E2F","#006D77"];
+    function shuffle(arr){
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+    function pickAnswerColors(n){
+      var pool = shuffle(ANSWER_COLOR_POOL);
+      while (pool.length < n) pool = pool.concat(shuffle(ANSWER_COLOR_POOL));
+      return pool.slice(0, n);
+    }
+    function applyAnswerColors(containerId){
+      var wrap = $(containerId);
+      if (!wrap) return;
+      var nodes = wrap.querySelectorAll(".choice");
+      var colors = pickAnswerColors(nodes.length);
+      nodes.forEach(function(node, idx){
+        node.style.background = colors[idx];
+        node.style.borderColor = "rgba(255,255,255,.32)";
+      });
+    }
+
+    function ensureTimer(cardId){
+      var card = $(cardId);
+      if (!card) return null;
+      if (card.__timerObj) return card.__timerObj;
+
+      var ns = "http://www.w3.org/2000/svg";
+      var svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("class", "timer-svg");
+
+      var track = document.createElementNS(ns, "rect");
+      track.setAttribute("class", "timer-track");
+
+      var prog = document.createElementNS(ns, "rect");
+      prog.setAttribute("class", "timer-prog");
+
+      svg.appendChild(track);
+      svg.appendChild(prog);
+      card.appendChild(svg);
+
+      var obj = { card: card, svg: svg, track: track, prog: prog, len: 0, raf: 0 };
+
+      obj.resize = function(){
+        var w = card.clientWidth;
+        var h = card.clientHeight;
+        var sw = 6;
+        var r = 16;
+        var rx = Math.max(0, r - sw/2);
+
+        svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+
+        track.setAttribute("x", sw/2);
+        track.setAttribute("y", sw/2);
+        track.setAttribute("width", Math.max(0, w - sw));
+        track.setAttribute("height", Math.max(0, h - sw));
+        track.setAttribute("rx", rx);
+        track.setAttribute("ry", rx);
+
+        prog.setAttribute("x", sw/2);
+        prog.setAttribute("y", sw/2);
+        prog.setAttribute("width", Math.max(0, w - sw));
+        prog.setAttribute("height", Math.max(0, h - sw));
+        prog.setAttribute("rx", rx);
+        prog.setAttribute("ry", rx);
+
+        try{
+          obj.len = prog.getTotalLength();
+          prog.style.strokeDasharray = String(obj.len);
+        }catch(e){}
+      };
+
+      window.addEventListener("resize", function(){ obj.resize(); });
+      obj.resize();
+
+      card.__timerObj = obj;
+      return obj;
+    }
+
+    function startTimer(cardId, startAtMs, durationMs){
+      var t = ensureTimer(cardId);
+      if (!t || !t.len) return;
+
+      t.resize();
+      if (t.raf) cancelAnimationFrame(t.raf);
+
+      var len = t.len;
+      t.prog.style.opacity = "1";
+      t.prog.style.strokeDasharray = String(len);
+      t.prog.style.strokeDashoffset = String(len);
+
+      function step(){
+        var now = Date.now();
+        var p = (now - startAtMs) / durationMs;
+
+        if (p < 0) {
+          t.prog.style.strokeDashoffset = String(len);
+          t.raf = requestAnimationFrame(step);
+          return;
+        }
+
+        p = Math.max(0, Math.min(1, p));
+        t.prog.style.strokeDashoffset = String(len * (1 - p));
+        if (p < 1) t.raf = requestAnimationFrame(step);
+      }
+      t.raf = requestAnimationFrame(step);
+    }
+
+    function stopTimer(cardId){
+      var t = ensureTimer(cardId);
+      if (!t) return;
+      if (t.raf) cancelAnimationFrame(t.raf);
+      t.raf = 0;
+      t.prog.style.opacity = "0";
+    }
+
+    // ✅ Nhạc câu hỏi (Olympia)
+    var audio = document.getElementById("qAudio");
+    var soundBtn = document.getElementById("soundBtn");
+    function stopAudio(){ try{ audio.pause(); audio.currentTime = 0; }catch(e){} }
+    function playAudioAfter(delayMs){
+      stopAudio();
+      soundBtn.style.display = "none";
+      setTimeout(function(){
+        audio.play().catch(function(){ soundBtn.style.display = "inline-flex"; });
+      }, delayMs);
+    }
+    soundBtn.onclick = function(){
+      audio.play().then(function(){ soundBtn.style.display = "none"; }).catch(function(){});
+    };
+
+    var dot = document.getElementById("connDot");
+    var text = document.getElementById("connText");
+    function setConn(ok, msg){
+      dot.classList.remove("good","bad");
+      dot.classList.add(ok ? "good" : "bad");
+      text.textContent = msg;
+    }
+
+    var code = null;
+    var state = null;
+
+    var popupTimer = null;
+    function hidePopup(){ document.getElementById("fastPopup").style.display = "none"; }
+    function showPopup(list, showMs){
+      if (popupTimer) clearTimeout(popupTimer);
+      var fastBody = document.getElementById("fastBody");
+      if (!list || !list.length){
+        fastBody.innerHTML = '<tr><td colspan="4" class="small">Không có ai trả lời đúng.</td></tr>';
+      } else {
+        fastBody.innerHTML = list.map(function(x,i){
+          return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + fmtMs(x.elapsedMs) + "</td><td>+" + (x.points || 0) + "</td></tr>";
+        }).join("");
+      }
+      document.getElementById("fastPopup").style.display = "flex";
+      popupTimer = setTimeout(hidePopup, showMs || 7000);
+    }
+
+    function setButtons(){
+      document.getElementById("btnCreate").disabled = !socket.connected;
+      document.getElementById("btnStart").disabled  = !socket.connected || !code || (state && state.started);
+      document.getElementById("btnReveal").disabled = !socket.connected || !code || !(state && state.started) || (state && state.ended);
+      document.getElementById("btnNext").disabled   = !socket.connected || !code || !(state && state.started) || (state && state.ended);
+    }
+
+    socket.on("connect", function(){ setConn(true,"Đã kết nối"); setButtons(); });
+    socket.on("disconnect", function(){ setConn(false,"Mất kết nối"); setButtons(); });
+    socket.on("connect_error", function(){ setConn(false,"Lỗi kết nối"); setButtons(); });
+
+    document.getElementById("btnCreate").onclick = function(){
+      socket.emit("host:createRoom", {}, function(resp){
+        if (!resp || !resp.ok) return alert((resp && resp.error) || "Không tạo được phòng");
+        code = resp.code;
+        document.getElementById("roomCode").textContent = code;
+        hidePopup(); stopAudio(); stopTimer("qaCardHost"); setButtons();
+      });
+    };
+
+    document.getElementById("btnStart").onclick = function(){
+      socket.emit("host:start", { code: code }, function(resp){
+        if (!resp || !resp.ok) return alert((resp && resp.error) || "Không thể bắt đầu");
+        hidePopup(); stopAudio(); stopTimer("qaCardHost"); setButtons();
+      });
+    };
+
+    document.getElementById("btnReveal").onclick = function(){
+      socket.emit("host:reveal", { code: code }, function(resp){
+        if (!resp || !resp.ok) alert((resp && resp.error) || "Lỗi");
+      });
+    };
+
+    document.getElementById("btnNext").onclick = function(){
+      socket.emit("host:next", { code: code }, function(resp){
+        if (!resp || !resp.ok) return alert((resp && resp.error) || "Lỗi");
+        hidePopup(); stopAudio(); stopTimer("qaCardHost"); setButtons();
+      });
+    };
+
+    socket.on("players:count", function(p){
+      document.getElementById("playersCount").textContent = String((p && p.count) || 0);
+    });
+
+    socket.on("room:state", function(s){
+      state = s;
+      if (state && state.total != null && state.qIndex != null) {
+        document.getElementById("qCounter").textContent = String(state.qIndex + 1) + "/" + String(state.total);
+      }
+      setButtons();
+    });
+
+    socket.on("question:progress", function(p){
+      document.getElementById("qAnswered").textContent = String(p.answered) + "/" + String(p.totalPlayers);
+    });
+
+    socket.on("question:start", function(q){
+      hidePopup(); stopAudio(); stopTimer("qaCardHost");
+
+      document.getElementById("qText").textContent = q.text;
+      document.getElementById("qAnswered").textContent = "0";
+
+      document.getElementById("choicesHost").innerHTML = q.choices.map(function(c,i){
+        var letter = String.fromCharCode(65+i);
+        return '<div class="choice"><span class="opt">' + letter + '</span><span class="txt">' + esc(c) + '</span></div>';
+      }).join("");
+
+      applyAnswerColors("choicesHost");
+
+      var delay = Math.max(0, q.startedAtMs - (q.serverNowMs || Date.now()));
+      var startLocalMs = Date.now() + delay;
+
+      playAudioAfter(delay);
+      startTimer("qaCardHost", startLocalMs, q.timeLimitSec * 1000);
+    });
+
+    socket.on("question:end", function(p){
+      stopAudio(); stopTimer("qaCardHost");
+
+      var totalTop15 = p.totalTop15 || [];
+      document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
+        return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
+      }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
+
+      showPopup(p.fastTop5 || [], p.popupShowMs || 7000);
+    });
+
+    socket.on("game:end", function(p){
+      stopAudio(); stopTimer("qaCardHost");
+
+      var totalTop15 = p.totalTop15 || [];
+      document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
+        return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
+      }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
+
+      alert("Kết thúc game! Tổng người chơi: " + p.totalPlayers);
+    });
+
+    setButtons();
+  </script>
+  `;
+}
+
+function playPageHtml() {
+  return `
+  <div class="header">
+    <h1>Người chơi</h1>
+    <div class="row">
+      <a class="pill" href="/host">Host (cần key)</a>
+      <button id="soundBtn" class="pill" style="display:none;background:transparent;cursor:pointer">🔊 Bật âm thanh</button>
+      <span class="pill"><span class="dot" id="connDot"></span><span id="connText">Đang kết nối…</span></span>
+    </div>
+  </div>
+
+  <!-- ✅ NHẠC CÂU HỎI (GIỮ NGUYÊN) -->
+  <audio id="qAudio" preload="auto" src="/audio/olympia.mp3"></audio>
+
+  <div class="grid">
+    <div class="card">
+      <div class="small">Tham gia phòng</div>
+      <div class="row" style="margin-top:8px">
+        <div style="flex:1;min-width:220px">
+          <label>Mã phòng</label>
+          <input id="code" placeholder="ABC123"/>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Tên</th><th>Thời gian</th><th>+Điểm</th></tr></thead>
-            <tbody id="fastBody"></tbody>
-          </table>
+        <div style="flex:1;min-width:220px">
+          <label>Tên của bạn</label>
+          <input id="name" placeholder="Nguyễn Văn A"/>
         </div>
       </div>
+      <div class="row" style="margin-top:10px">
+        <button id="btnJoin" class="btn">Tham gia</button>
+        <span id="joinStatus" class="small"></span>
+      </div>
+      <hr/>
+      <div class="row">
+        <span class="pill">Điểm: <b id="score">0</b></span>
+        <span class="pill">Hạng (tạm tính): <b id="rank">—</b></span>
+      </div>
+      <p class="small" style="margin:10px 0 0">Không hiển thị giây — xem thanh thời gian chạy quanh khung.</p>
     </div>
 
-    <script>
-      var socket = io();
-      var esc = function(s){
-        return String(s).replace(/[&<>"']/g, function(m){
-          return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]);
-        });
-      };
-      function fmtMs(ms){ return (ms/1000).toFixed(2) + "s"; }
+    <div id="qaCardPlay" class="card qaCard">
+      <div class="small">Câu hỏi</div>
+      <h2 id="qText" style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">—</h2>
+      <div id="choicesPlay" class="choices"></div>
+      <div id="feedback" class="small" style="margin-top:10px"></div>
+    </div>
+  </div>
 
-      var ANSWER_COLOR_POOL = ["#1D3557","#0B3D91","#264653","#283618","#2F3E46","#3A0CA3","#5A189A","#6A040F","#004E64","#1B263B","#2D1E2F","#006D77"];
-      function shuffle(arr){
-        var a = arr.slice();
-        for (var i = a.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var t = a[i]; a[i] = a[j]; a[j] = t;
-        }
-        return a;
+  <div class="card" style="margin-top:16px">
+    <div class="small">Bảng xếp hạng tổng điểm</div>
+    <h2 style="margin:6px 0 0;font-size:clamp(16px,4.2vw,18px)">Top 15 (tích lũy)</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Tên</th><th>Tổng điểm</th></tr></thead>
+        <tbody id="lbBody"><tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="fastPopup" class="overlay">
+    <div class="modal card">
+      <div class="header">
+        <h1 style="font-size:18px;margin:0">Top 5 đúng & nhanh (câu vừa xong)</h1>
+        <span class="pill"><span class="small">Tự tắt sau 7 giây</span></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Tên</th><th>Thời gian</th><th>+Điểm</th></tr></thead>
+          <tbody id="fastBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var socket = io();
+    var esc = function(s){
+      return String(s).replace(/[&<>"']/g, function(m){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]);
+      });
+    };
+    function fmtMs(ms){ return (ms/1000).toFixed(2) + "s"; }
+
+    var ANSWER_COLOR_POOL = ["#1D3557","#0B3D91","#264653","#283618","#2F3E46","#3A0CA3","#5A189A","#6A040F","#004E64","#1B263B","#2D1E2F","#006D77"];
+    function shuffle(arr){
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
       }
-      function pickAnswerColors(n){
-        var pool = shuffle(ANSWER_COLOR_POOL);
-        while (pool.length < n) pool = pool.concat(shuffle(ANSWER_COLOR_POOL));
-        return pool.slice(0, n);
-      }
-      function applyAnswerColors(containerId){
-        var wrap = document.getElementById(containerId);
-        if (!wrap) return;
-        var nodes = wrap.querySelectorAll(".choice");
-        var colors = pickAnswerColors(nodes.length);
-        nodes.forEach(function(node, idx){
-          node.style.background = colors[idx];
-          node.style.borderColor = "rgba(255,255,255,.32)";
-        });
-      }
+      return a;
+    }
+    function pickAnswerColors(n){
+      var pool = shuffle(ANSWER_COLOR_POOL);
+      while (pool.length < n) pool = pool.concat(shuffle(ANSWER_COLOR_POOL));
+      return pool.slice(0, n);
+    }
+    function applyAnswerColors(containerId){
+      var wrap = document.getElementById(containerId);
+      if (!wrap) return;
+      var nodes = wrap.querySelectorAll(".choice");
+      var colors = pickAnswerColors(nodes.length);
+      nodes.forEach(function(node, idx){
+        node.style.background = colors[idx];
+        node.style.borderColor = "rgba(255,255,255,.32)";
+      });
+    }
 
-      function ensureTimer(cardId){
-        var card = document.getElementById(cardId);
-        if (!card) return null;
-        if (card.__timerObj) return card.__timerObj;
+    function ensureTimer(cardId){
+      var card = document.getElementById(cardId);
+      if (!card) return null;
+      if (card.__timerObj) return card.__timerObj;
 
-        var ns = "http://www.w3.org/2000/svg";
-        var svg = document.createElementNS(ns, "svg");
-        svg.setAttribute("class", "timer-svg");
+      var ns = "http://www.w3.org/2000/svg";
+      var svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("class", "timer-svg");
 
-        var track = document.createElementNS(ns, "rect");
-        track.setAttribute("class", "timer-track");
+      var track = document.createElementNS(ns, "rect");
+      track.setAttribute("class", "timer-track");
 
-        var prog = document.createElementNS(ns, "rect");
-        prog.setAttribute("class", "timer-prog");
+      var prog = document.createElementNS(ns, "rect");
+      prog.setAttribute("class", "timer-prog");
 
-        svg.appendChild(track);
-        svg.appendChild(prog);
-        card.appendChild(svg);
+      svg.appendChild(track);
+      svg.appendChild(prog);
+      card.appendChild(svg);
 
-        var obj = { card: card, svg: svg, track: track, prog: prog, len: 0, raf: 0 };
+      var obj = { card: card, svg: svg, track: track, prog: prog, len: 0, raf: 0 };
 
-        obj.resize = function(){
-          var w = card.clientWidth;
-          var h = card.clientHeight;
-          var sw = 6;
-          var r = 16;
-          var rx = Math.max(0, r - sw/2);
+      obj.resize = function(){
+        var w = card.clientWidth;
+        var h = card.clientHeight;
+        var sw = 6;
+        var r = 16;
+        var rx = Math.max(0, r - sw/2);
 
-          svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+        svg.setAttribute("viewBox", "0 0 " + w + " " + h);
 
-          track.setAttribute("x", sw/2);
-          track.setAttribute("y", sw/2);
-          track.setAttribute("width", Math.max(0, w - sw));
-          track.setAttribute("height", Math.max(0, h - sw));
-          track.setAttribute("rx", rx);
-          track.setAttribute("ry", rx);
+        track.setAttribute("x", sw/2);
+        track.setAttribute("y", sw/2);
+        track.setAttribute("width", Math.max(0, w - sw));
+        track.setAttribute("height", Math.max(0, h - sw));
+        track.setAttribute("rx", rx);
+        track.setAttribute("ry", rx);
 
-          prog.setAttribute("x", sw/2);
-          prog.setAttribute("y", sw/2);
-          prog.setAttribute("width", Math.max(0, w - sw));
-          prog.setAttribute("height", Math.max(0, h - sw));
-          prog.setAttribute("rx", rx);
-          prog.setAttribute("ry", rx);
+        prog.setAttribute("x", sw/2);
+        prog.setAttribute("y", sw/2);
+        prog.setAttribute("width", Math.max(0, w - sw));
+        prog.setAttribute("height", Math.max(0, h - sw));
+        prog.setAttribute("rx", rx);
+        prog.setAttribute("ry", rx);
 
-          try{
-            obj.len = prog.getTotalLength();
-            prog.style.strokeDasharray = String(obj.len);
-          }catch(e){}
-        };
-
-        window.addEventListener("resize", function(){ obj.resize(); });
-        obj.resize();
-
-        card.__timerObj = obj;
-        return obj;
-      }
-
-      function startTimer(cardId, startAtMs, durationMs){
-        var t = ensureTimer(cardId);
-        if (!t || !t.len) return;
-
-        t.resize();
-        if (t.raf) cancelAnimationFrame(t.raf);
-
-        var len = t.len;
-        t.prog.style.opacity = "1";
-        t.prog.style.strokeDasharray = String(len);
-        t.prog.style.strokeDashoffset = String(len);
-
-        function step(){
-          var now = Date.now();
-          var p = (now - startAtMs) / durationMs;
-
-          if (p < 0) {
-            t.prog.style.strokeDashoffset = String(len);
-            t.raf = requestAnimationFrame(step);
-            return;
-          }
-
-          p = Math.max(0, Math.min(1, p));
-          t.prog.style.strokeDashoffset = String(len * (1 - p));
-          if (p < 1) t.raf = requestAnimationFrame(step);
-        }
-        t.raf = requestAnimationFrame(step);
-      }
-
-      function stopTimer(cardId){
-        var t = ensureTimer(cardId);
-        if (!t) return;
-        if (t.raf) cancelAnimationFrame(t.raf);
-        t.raf = 0;
-        t.prog.style.opacity = "0";
-      }
-
-      var audio = document.getElementById("qAudio");
-      var soundBtn = document.getElementById("soundBtn");
-      function stopAudio(){ try{ audio.pause(); audio.currentTime = 0; }catch(e){} }
-      function playAudioAfter(delayMs){
-        stopAudio();
-        soundBtn.style.display = "none";
-        setTimeout(function(){
-          audio.play().catch(function(){ soundBtn.style.display = "inline-flex"; });
-        }, delayMs);
-      }
-      soundBtn.onclick = function(){
-        audio.play().then(function(){ soundBtn.style.display = "none"; }).catch(function(){});
+        try{
+          obj.len = prog.getTotalLength();
+          prog.style.strokeDasharray = String(obj.len);
+        }catch(e){}
       };
 
-      var dot = document.getElementById("connDot");
-      var text = document.getElementById("connText");
-      function setConn(ok, msg){
-        dot.classList.remove("good","bad");
-        dot.classList.add(ok ? "good" : "bad");
-        text.textContent = msg;
-      }
-      socket.on("connect", function(){ setConn(true,"Đã kết nối"); });
-      socket.on("disconnect", function(){ setConn(false,"Mất kết nối"); });
-      socket.on("connect_error", function(){ setConn(false,"Lỗi kết nối"); });
+      window.addEventListener("resize", function(){ obj.resize(); });
+      obj.resize();
 
-      var joined = false;
-      var roomCode = null;
-      var myAnswered = false;
-      var enableTimer = null;
+      card.__timerObj = obj;
+      return obj;
+    }
 
-      function clearEnable(){ if (enableTimer) clearTimeout(enableTimer); enableTimer = null; }
+    function startTimer(cardId, startAtMs, durationMs){
+      var t = ensureTimer(cardId);
+      if (!t || !t.len) return;
 
-      function setAnswerEnabled(enabled){
-        Array.prototype.forEach.call(document.getElementById("choicesPlay").querySelectorAll("button.choice"), function(b){
-          if (!myAnswered) {
-            if (enabled) b.removeAttribute("disabled");
-            else b.setAttribute("disabled","disabled");
-          }
-        });
-      }
+      t.resize();
+      if (t.raf) cancelAnimationFrame(t.raf);
 
-      var popupTimer = null;
-      function hidePopup(){ document.getElementById("fastPopup").style.display = "none"; }
-      function showPopup(list, showMs){
-        if (popupTimer) clearTimeout(popupTimer);
-        var fastBody = document.getElementById("fastBody");
-        if (!list || !list.length){
-          fastBody.innerHTML = '<tr><td colspan="4" class="small">Không có ai trả lời đúng.</td></tr>';
-        } else {
-          fastBody.innerHTML = list.map(function(x,i){
-            return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + fmtMs(x.elapsedMs) + "</td><td>+" + (x.points || 0) + "</td></tr>";
-          }).join("");
+      var len = t.len;
+      t.prog.style.opacity = "1";
+      t.prog.style.strokeDasharray = String(len);
+      t.prog.style.strokeDashoffset = String(len);
+
+      function step(){
+        var now = Date.now();
+        var p = (now - startAtMs) / durationMs;
+
+        if (p < 0) {
+          t.prog.style.strokeDashoffset = String(len);
+          t.raf = requestAnimationFrame(step);
+          return;
         }
-        document.getElementById("fastPopup").style.display = "flex";
-        popupTimer = setTimeout(hidePopup, showMs || 7000);
+
+        p = Math.max(0, Math.min(1, p));
+        t.prog.style.strokeDashoffset = String(len * (1 - p));
+        if (p < 1) t.raf = requestAnimationFrame(step);
       }
+      t.raf = requestAnimationFrame(step);
+    }
 
-      document.getElementById("btnJoin").onclick = function(){
-        var code = document.getElementById("code").value.trim().toUpperCase();
-        var name = document.getElementById("name").value.trim();
-        socket.emit("player:join", { code: code, name: name }, function(resp){
-          if (!resp || !resp.ok) {
-            joined = false;
-            document.getElementById("joinStatus").innerHTML = '<span class="bad">✖ ' + esc((resp && resp.error) || "Không tham gia được") + '</span>';
-            return;
-          }
-          joined = true;
-          roomCode = code;
-          document.getElementById("joinStatus").innerHTML = '<span class="good">✔ Đã vào phòng ' + esc(code) + '</span>';
-        });
-      };
+    function stopTimer(cardId){
+      var t = ensureTimer(cardId);
+      if (!t) return;
+      if (t.raf) cancelAnimationFrame(t.raf);
+      t.raf = 0;
+      t.prog.style.opacity = "0";
+    }
 
-      socket.on("question:start", function(q){
-        if (!joined) return;
+    // ✅ Nhạc câu hỏi (Olympia)
+    var audio = document.getElementById("qAudio");
+    var soundBtn = document.getElementById("soundBtn");
+    function stopAudio(){ try{ audio.pause(); audio.currentTime = 0; }catch(e){} }
+    function playAudioAfter(delayMs){
+      stopAudio();
+      soundBtn.style.display = "none";
+      setTimeout(function(){
+        audio.play().catch(function(){ soundBtn.style.display = "inline-flex"; });
+      }, delayMs);
+    }
+    soundBtn.onclick = function(){
+      audio.play().then(function(){ soundBtn.style.display = "none"; }).catch(function(){});
+    };
 
-        hidePopup(); stopAudio(); stopTimer("qaCardPlay"); clearEnable();
-        myAnswered = false;
-        document.getElementById("feedback").textContent = "";
-        document.getElementById("qText").textContent = q.text;
+    var dot = document.getElementById("connDot");
+    var text = document.getElementById("connText");
+    function setConn(ok, msg){
+      dot.classList.remove("good","bad");
+      dot.classList.add(ok ? "good" : "bad");
+      text.textContent = msg;
+    }
+    socket.on("connect", function(){ setConn(true,"Đã kết nối"); });
+    socket.on("disconnect", function(){ setConn(false,"Mất kết nối"); });
+    socket.on("connect_error", function(){ setConn(false,"Lỗi kết nối"); });
 
-        document.getElementById("choicesPlay").innerHTML = q.choices.map(function(c,i){
-          var letter = String.fromCharCode(65+i);
-          return '<button class="choice" data-i="' + i + '" disabled>' +
-                   '<span class="opt">' + letter + '</span>' +
-                   '<span class="txt">' + esc(c) + '</span>' +
-                 '</button>';
+    var joined = false;
+    var roomCode = null;
+    var myAnswered = false;
+    var enableTimer = null;
+
+    function clearEnable(){ if (enableTimer) clearTimeout(enableTimer); enableTimer = null; }
+
+    function setAnswerEnabled(enabled){
+      Array.prototype.forEach.call(document.getElementById("choicesPlay").querySelectorAll("button.choice"), function(b){
+        if (!myAnswered) {
+          if (enabled) b.removeAttribute("disabled");
+          else b.setAttribute("disabled","disabled");
+        }
+      });
+    }
+
+    var popupTimer = null;
+    function hidePopup(){ document.getElementById("fastPopup").style.display = "none"; }
+    function showPopup(list, showMs){
+      if (popupTimer) clearTimeout(popupTimer);
+      var fastBody = document.getElementById("fastBody");
+      if (!list || !list.length){
+        fastBody.innerHTML = '<tr><td colspan="4" class="small">Không có ai trả lời đúng.</td></tr>';
+      } else {
+        fastBody.innerHTML = list.map(function(x,i){
+          return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + fmtMs(x.elapsedMs) + "</td><td>+" + (x.points || 0) + "</td></tr>";
         }).join("");
+      }
+      document.getElementById("fastPopup").style.display = "flex";
+      popupTimer = setTimeout(hidePopup, showMs || 7000);
+    }
 
-        applyAnswerColors("choicesPlay");
-
-        var delay = Math.max(0, q.startedAtMs - (q.serverNowMs || Date.now()));
-        var startLocalMs = Date.now() + delay;
-
-        playAudioAfter(delay);
-        startTimer("qaCardPlay", startLocalMs, q.timeLimitSec * 1000);
-
-        enableTimer = setTimeout(function(){ setAnswerEnabled(true); }, delay);
-
-        Array.prototype.forEach.call(document.getElementById("choicesPlay").querySelectorAll("button.choice"), function(btn){
-          btn.onclick = function(){
-            if (myAnswered) return;
-            if (btn.hasAttribute("disabled")) return;
-
-            myAnswered = true;
-            var choiceIndex = Number(btn.getAttribute("data-i"));
-            setAnswerEnabled(false);
-
-            socket.emit("player:answer", { code: roomCode, choiceIndex: choiceIndex }, function(resp){
-              if (!resp || !resp.ok) {
-                document.getElementById("feedback").innerHTML = '<span class="bad">✖ ' + esc((resp && resp.error) || "Lỗi") + '</span>';
-                return;
-              }
-              document.getElementById("score").textContent = String(resp.totalScore || 0);
-              document.getElementById("rank").textContent = String(resp.rank || "—");
-              document.getElementById("feedback").innerHTML = resp.correct
-                ? '<span class="good">✔ Đúng</span> • +' + resp.points + " điểm"
-                : '<span class="bad">✖ Sai</span> • +0 điểm';
-            });
-          };
-        });
+    document.getElementById("btnJoin").onclick = function(){
+      var code = document.getElementById("code").value.trim().toUpperCase();
+      var name = document.getElementById("name").value.trim();
+      socket.emit("player:join", { code: code, name: name }, function(resp){
+        if (!resp || !resp.ok) {
+          joined = false;
+          document.getElementById("joinStatus").innerHTML = '<span class="bad">✖ ' + esc((resp && resp.error) || "Không tham gia được") + '</span>';
+          return;
+        }
+        joined = true;
+        roomCode = code;
+        document.getElementById("joinStatus").innerHTML = '<span class="good">✔ Đã vào phòng ' + esc(code) + '</span>';
       });
+    };
 
-      socket.on("question:end", function(p){
-        if (!joined) return;
+    socket.on("question:start", function(q){
+      if (!joined) return;
 
-        stopAudio(); stopTimer("qaCardPlay"); clearEnable();
+      hidePopup(); stopAudio(); stopTimer("qaCardPlay"); clearEnable();
+      myAnswered = false;
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("qText").textContent = q.text;
 
-        var totalTop15 = p.totalTop15 || [];
-        document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
-          return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
-        }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
+      document.getElementById("choicesPlay").innerHTML = q.choices.map(function(c,i){
+        var letter = String.fromCharCode(65+i);
+        return '<button class="choice" data-i="' + i + '" disabled>' +
+                 '<span class="opt">' + letter + '</span>' +
+                 '<span class="txt">' + esc(c) + '</span>' +
+               '</button>';
+      }).join("");
 
-        showPopup(p.fastTop5 || [], p.popupShowMs || 7000);
+      applyAnswerColors("choicesPlay");
+
+      var delay = Math.max(0, q.startedAtMs - (q.serverNowMs || Date.now()));
+      var startLocalMs = Date.now() + delay;
+
+      playAudioAfter(delay);
+      startTimer("qaCardPlay", startLocalMs, q.timeLimitSec * 1000);
+
+      enableTimer = setTimeout(function(){ setAnswerEnabled(true); }, delay);
+
+      Array.prototype.forEach.call(document.getElementById("choicesPlay").querySelectorAll("button.choice"), function(btn){
+        btn.onclick = function(){
+          if (myAnswered) return;
+          if (btn.hasAttribute("disabled")) return;
+
+          myAnswered = true;
+          var choiceIndex = Number(btn.getAttribute("data-i"));
+          setAnswerEnabled(false);
+
+          socket.emit("player:answer", { code: roomCode, choiceIndex: choiceIndex }, function(resp){
+            if (!resp || !resp.ok) {
+              document.getElementById("feedback").innerHTML = '<span class="bad">✖ ' + esc((resp && resp.error) || "Lỗi") + '</span>';
+              return;
+            }
+            document.getElementById("score").textContent = String(resp.totalScore || 0);
+            document.getElementById("rank").textContent = String(resp.rank || "—");
+            document.getElementById("feedback").innerHTML = resp.correct
+              ? '<span class="good">✔ Đúng</span> • +' + resp.points + " điểm"
+              : '<span class="bad">✖ Sai</span> • +0 điểm';
+          });
+        };
       });
+    });
 
-      socket.on("game:end", function(p){
-        stopAudio(); stopTimer("qaCardPlay"); clearEnable();
+    socket.on("question:end", function(p){
+      if (!joined) return;
 
-        var totalTop15 = p.totalTop15 || [];
-        document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
-          return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
-        }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
+      stopAudio(); stopTimer("qaCardPlay"); clearEnable();
 
-        alert("Kết thúc game! Tổng người chơi: " + p.totalPlayers);
-      });
-    </script>
-  `
-    )
-  );
-});
+      var totalTop15 = p.totalTop15 || [];
+      document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
+        return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
+      }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
+
+      showPopup(p.fastTop5 || [], p.popupShowMs || 7000);
+    });
+
+    socket.on("game:end", function(p){
+      if (!joined) return;
+
+      stopAudio(); stopTimer("qaCardPlay"); clearEnable();
+
+      var totalTop15 = p.totalTop15 || [];
+      document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
+        return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
+      }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
+
+      alert("Kết thúc game! Tổng người chơi: " + p.totalPlayers);
+    });
+  </script>
+  `;
+}
 
 /* ================== SOCKET.IO ================== */
 function socketIsHost(socket) {
@@ -1413,4 +1435,3 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, "0.0.0.0", () => console.log("Realtime quiz running on port", PORT));
-
