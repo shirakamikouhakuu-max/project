@@ -69,24 +69,127 @@ const PRE_DELAY_MS = 500;      // chuẩn bị 0.5s
 const POPUP_SHOW_MS = 7000;    // popup top5 hiện 7s
 const MAX_POINTS = 1000;
 
+/* ================== QUIZ (20 câu khó hơn) ================== */
 const QUIZ = {
   title: "Quiz Realtime – 22s + Nhạc Olympia + Popup Top 5",
   questions: [
     {
-      text: "1) Thủ đô của Việt Nam là gì?",
-      choices: ["TP.HCM", "Hà Nội", "Đà Nẵng", "Huế"],
-      correctIndex: 1,
+      text: "Nguyên tố hóa học nào có ký hiệu là W?",
+      choices: ["Vonfram (Tungsten)", "Kẽm (Zn)", "Sắt (Fe)", "Bạc (Ag)"],
+      correctIndex: 0,
       timeLimitSec: 22
     },
     {
-      text: "2) 5 x 6 = ?",
-      choices: ["11", "25", "30", "56"],
+      text: "Giá trị của log₂(64) bằng bao nhiêu?",
+      choices: ["4", "5", "6", "8"],
       correctIndex: 2,
       timeLimitSec: 22
     },
     {
-      text: "3) Biển Đông tiếng Anh là gì?",
-      choices: ["East Sea", "Red Sea", "Black Sea", "Yellow Sea"],
+      text: "Số nguyên tố lớn nhất nhỏ hơn 100 là số nào?",
+      choices: ["97", "99", "91", "89"],
+      correctIndex: 0,
+      timeLimitSec: 22
+    },
+    {
+      text: "Định luật nào: Áp suất tác dụng lên chất lỏng được truyền nguyên vẹn theo mọi hướng?",
+      choices: ["Pascal", "Archimedes", "Ohm", "Boyle"],
+      correctIndex: 0,
+      timeLimitSec: 22
+    },
+    {
+      text: "Thành phần chiếm tỉ lệ lớn nhất trong khí quyển Trái Đất (theo thể tích) là gì?",
+      choices: ["O₂", "N₂", "CO₂", "Ar"],
+      correctIndex: 1,
+      timeLimitSec: 22
+    },
+    {
+      text: "Trong hệ SI, đơn vị của công (Work) là gì?",
+      choices: ["Watt", "Joule", "Newton", "Pascal"],
+      correctIndex: 1,
+      timeLimitSec: 22
+    },
+    {
+      text: "Tác giả của 'Truyện Kiều' là ai?",
+      choices: ["Nguyễn Du", "Hồ Xuân Hương", "Nguyễn Trãi", "Xuân Diệu"],
+      correctIndex: 0,
+      timeLimitSec: 22
+    },
+    {
+      text: "Vệ tinh nhân tạo đầu tiên của loài người tên là gì?",
+      choices: ["Apollo 11", "Sputnik 1", "Voyager 1", "Hubble"],
+      correctIndex: 1,
+      timeLimitSec: 22
+    },
+    {
+      text: "1 Ampere tương đương bao nhiêu Coulomb trên mỗi giây?",
+      choices: ["1 C/s", "10 C/s", "0.1 C/s", "100 C/s"],
+      correctIndex: 0,
+      timeLimitSec: 22
+    },
+    {
+      text: "Khái niệm 'chu kỳ bán rã' thường dùng trong lĩnh vực nào?",
+      choices: ["Âm học", "Phóng xạ hạt nhân", "Khí tượng", "Cơ học chất lỏng"],
+      correctIndex: 1,
+      timeLimitSec: 22
+    },
+    {
+      text: "Trong tam giác vuông, định lý Pythagoras: a² + b² = ?",
+      choices: ["c", "c²", "2c", "ab"],
+      correctIndex: 1,
+      timeLimitSec: 22
+    },
+    {
+      text: "Cấu trúc dữ liệu LIFO trong lập trình là gì?",
+      choices: ["Queue (Hàng đợi)", "Stack (Ngăn xếp)", "Tree (Cây)", "Graph (Đồ thị)"],
+      correctIndex: 1,
+      timeLimitSec: 22
+    },
+    {
+      text: "Đường tròn là tập hợp các điểm như thế nào trong mặt phẳng?",
+      choices: ["Cách đều một điểm cố định", "Cách đều một đường thẳng", "Tổng khoảng cách đến 2 điểm cố định không đổi", "Luôn tạo góc 90° với một tia cố định"],
+      correctIndex: 0,
+      timeLimitSec: 22
+    },
+    {
+      text: "Nguyên tố có số hiệu nguyên tử 29 là gì?",
+      choices: ["Ni (Niken)", "Cu (Đồng)", "Ag (Bạc)", "Sn (Thiếc)"],
+      correctIndex: 1,
+      timeLimitSec: 22
+    },
+    {
+      text: "Hằng số Avogadro xấp xỉ bằng bao nhiêu?",
+      choices: ["6.022×10²³", "3.14×10⁸", "9.81", "1.602×10⁻¹⁹"],
+      correctIndex: 0,
+      timeLimitSec: 22
+    },
+    {
+      text: "Tốc độ ánh sáng trong chân không xấp xỉ bằng bao nhiêu?",
+      choices: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10¹⁰ m/s", "3×10⁴ m/s"],
+      correctIndex: 1,
+      timeLimitSec: 22
+    },
+    {
+      text: "Hai điện trở bằng nhau R mắc song song, điện trở tương đương bằng bao nhiêu?",
+      choices: ["2R", "R/2", "R", "R²"],
+      correctIndex: 1,
+      timeLimitSec: 22
+    },
+    {
+      text: "CPI là viết tắt của chỉ số nào trong kinh tế?",
+      choices: ["Consumer Price Index", "Capital Profit Index", "Consumer Product Income", "Core Payment Indicator"],
+      correctIndex: 0,
+      timeLimitSec: 22
+    },
+    {
+      text: "Thủ đô của Australia là thành phố nào?",
+      choices: ["Sydney", "Melbourne", "Canberra", "Perth"],
+      correctIndex: 2,
+      timeLimitSec: 22
+    },
+    {
+      text: "HTTPS thường dùng giao thức bảo mật nào?",
+      choices: ["TLS", "FTP", "SMTP", "SNMP"],
       correctIndex: 0,
       timeLimitSec: 22
     }
@@ -108,7 +211,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/audio", express.static(path.join(__dirname, "public", "audio"), { maxAge: "7d" }));
 app.use("/video", express.static(path.join(__dirname, "public", "video"), { maxAge: "7d" }));
-app.use("/img", express.static(path.join(__dirname, "public", "img"), { maxAge: "7d" })); // ✅ thêm
+app.use("/img", express.static(path.join(__dirname, "public", "img"), { maxAge: "7d" })); // ✅ ảnh background
 
 const server = http.createServer(app);
 const io = new Server(server);
@@ -120,7 +223,42 @@ function makeCode(len = 6) {
   return out;
 }
 
+/* ================== RANDOM HELPERS ================== */
+function shuffleInPlace(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function makeShuffledIndices(n) {
+  const arr = Array.from({ length: n }, (_, i) => i);
+  return shuffleInPlace(arr);
+}
+
+/* ================== ROOMS ================== */
 const rooms = new Map();
+
+function getRoomQuestion(room) {
+  const total = room.qOrder ? room.qOrder.length : QUIZ.questions.length;
+  const baseIdx = room.qOrder ? room.qOrder[room.qIndex] : room.qIndex;
+  const q = QUIZ.questions[baseIdx] || QUIZ.questions[0];
+  return { baseIdx, q, total };
+}
+
+function ensureChoiceMeta(room) {
+  // meta theo "vị trí câu trong game" (room.qIndex)
+  let meta = room.choiceMeta.get(room.qIndex);
+  if (meta) return meta;
+
+  const { q } = getRoomQuestion(room);
+  const order = shuffleInPlace(Array.from({ length: q.choices.length }, (_, i) => i));
+  const correctShuffledIndex = order.indexOf(q.correctIndex);
+
+  meta = { order, correctShuffledIndex };
+  room.choiceMeta.set(room.qIndex, meta);
+  return meta;
+}
 
 function publicState(room) {
   return {
@@ -128,17 +266,20 @@ function publicState(room) {
     started: room.started,
     ended: room.ended,
     qIndex: room.qIndex,
-    total: QUIZ.questions.length
+    total: room.qOrder ? room.qOrder.length : QUIZ.questions.length
   };
 }
 
 function safeQuestionPayload(room) {
-  const q = QUIZ.questions[room.qIndex];
+  const { q } = getRoomQuestion(room);
+  const meta = ensureChoiceMeta(room);
+  const shuffledChoices = meta.order.map((i) => q.choices[i]);
+
   return {
     qIndex: room.qIndex,
-    total: QUIZ.questions.length,
+    total: room.qOrder ? room.qOrder.length : QUIZ.questions.length,
     text: q.text,
-    choices: q.choices,
+    choices: shuffledChoices,
     timeLimitSec: q.timeLimitSec,
     startedAtMs: room.qStartAtMs,
     serverNowMs: Date.now(),
@@ -176,11 +317,15 @@ function startQuestion(room) {
 
   room.questionEndedFor = null;
   room.qStartAtMs = Date.now() + PRE_DELAY_MS;
+
   for (const p of room.players.values()) p.lastAnswer = null;
+
+  // ✅ random đáp án cho câu hiện tại
+  ensureChoiceMeta(room);
 
   io.to(room.code).emit("question:start", safeQuestionPayload(room));
 
-  const q = QUIZ.questions[room.qIndex];
+  const { q } = getRoomQuestion(room);
   room.timer = setTimeout(() => endQuestion(room), PRE_DELAY_MS + q.timeLimitSec * 1000);
 
   broadcast(room);
@@ -197,13 +342,13 @@ function endQuestion(room) {
     room.timer = null;
   }
 
-  const q = QUIZ.questions[room.qIndex];
+  const meta = ensureChoiceMeta(room);
   const totalTop15 = getTotalLeaderboard(room).slice(0, 15);
   const fastTop5 = getFastCorrectTop5(room);
 
   io.to(room.code).emit("question:end", {
     qIndex: room.qIndex,
-    correctIndex: q.correctIndex,
+    correctIndex: meta.correctShuffledIndex, // ✅ đúng theo đáp án đã random
     totalTop15,
     fastTop5,
     popupShowMs: POPUP_SHOW_MS
@@ -249,7 +394,6 @@ function layout(title, bodyHtml) {
 <script>
 (function(){
   try{
-    // splash chỉ hiện 1 lần trong 1 tab (session)
     var KEY = 'intro_seen_session_v4';
     if (sessionStorage.getItem(KEY) === '1') {
       document.documentElement.classList.add('intro-seen');
@@ -289,8 +433,8 @@ body{
   padding-bottom:calc(clamp(12px, 2.2vw, 24px) + env(safe-area-inset-bottom));
   visibility:hidden;
 
-  position:relative; /* ✅ thêm để nằm trên background */
-  z-index:1;         /* ✅ thêm */
+  position:relative;
+  z-index:1;
 }
 
 .header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -385,51 +529,39 @@ th{color:var(--muted);font-weight:900}
   stroke-linecap:round;stroke-linejoin:round;opacity:0
 }
 
-/* ================== SPLASH VIDEO (không còn viền đen) ================== */
+/* ================== SPLASH VIDEO ================== */
 .intro{
-  position:fixed;
-  left:0; top:0;
+  position:fixed; left:0; top:0;
   width:100vw;
   height:calc(var(--vh, 1vh) * 100);
   overflow:hidden;
   z-index:999999;
   display:block;
-  background:#000; /* fallback */
+  background:#000;
 }
-
 #introVidBg{
-  position:absolute;
-  left:0; top:0;
-  width:100vw;
-  height:calc(var(--vh, 1vh) * 100);
-  object-fit:cover;
-  object-position:center;
+  position:absolute; left:0; top:0;
+  width:100vw; height:calc(var(--vh, 1vh) * 100);
+  object-fit:cover; object-position:center;
   transform:scale(1.08);
   filter: blur(22px) brightness(1.06) saturate(1.18);
   opacity:0.95;
 }
-
 #introVid{
-  position:absolute;
-  left:0; top:0;
-  width:100vw;
-  height:calc(var(--vh, 1vh) * 100);
-  object-fit:contain;
-  object-position:center;
+  position:absolute; left:0; top:0;
+  width:100vw; height:calc(var(--vh, 1vh) * 100);
+  object-fit:contain; object-position:center;
   background:transparent;
   filter: brightness(1.18) contrast(1.06) saturate(1.06);
 }
-
 .intro::after{
   content:"";
   position:absolute; inset:0;
   background:linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,.12));
   pointer-events:none;
 }
-
 .intro-hint{
-  position:fixed;
-  left:50%;
+  position:fixed; left:50%;
   transform:translateX(-50%);
   bottom:calc(14px + env(safe-area-inset-bottom));
   background:rgba(0,0,0,.55);
@@ -440,10 +572,8 @@ th{color:var(--muted);font-weight:900}
   font-size:12px;
   z-index:1000000;
 }
-
 .intro-sound{
-  position:fixed;
-  right:14px;
+  position:fixed; right:14px;
   top:calc(14px + env(safe-area-inset-top));
   background:rgba(0,0,0,.55);
   border:1px solid rgba(255,255,255,.25);
@@ -455,7 +585,6 @@ th{color:var(--muted);font-weight:900}
   cursor:pointer;
 }
 .intro.hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
-
 .intro-seen .container{visibility:visible}
 .intro-seen #intro{display:none !important}
 
@@ -467,8 +596,6 @@ th{color:var(--muted);font-weight:900}
   pointer-events:none;
   background:#050814;
 }
-
-/* Lớp phủ fill màn hình (cover) + blur */
 .play-bg::before{
   content:"";
   position:absolute; inset:0;
@@ -480,8 +607,6 @@ th{color:var(--muted);font-weight:900}
   filter:blur(22px) brightness(0.95) saturate(1.15);
   opacity:0.35;
 }
-
-/* Lớp chính: HIỆN TRỌN VẸN ảnh (contain) */
 .play-bg::after{
   content:"";
   position:absolute; inset:0;
@@ -957,6 +1082,7 @@ function hostPageHtml() {
       document.getElementById("qAnswered").textContent = String(p.answered) + "/" + String(p.totalPlayers);
     });
 
+    // ✅ đồng bộ timer đúng cả khi reload / vào giữa câu
     socket.on("question:start", function(q){
       hidePopup(); stopAudio(); stopTimer("qaCardHost");
 
@@ -970,10 +1096,14 @@ function hostPageHtml() {
 
       applyAnswerColors("choicesHost");
 
-      var delay = Math.max(0, q.startedAtMs - (q.serverNowMs || Date.now()));
-      var startLocalMs = Date.now() + delay;
+      var serverNow = q.serverNowMs || Date.now();
+      var startedAt = q.startedAtMs || serverNow;
 
-      playAudioAfter(delay);
+      var offset = serverNow - startedAt;
+      var startLocalMs = Date.now() - offset;
+      var delayToStart = Math.max(0, startedAt - serverNow);
+
+      playAudioAfter(delayToStart);
       startTimer("qaCardHost", startLocalMs, q.timeLimitSec * 1000);
     });
 
@@ -1006,7 +1136,6 @@ function hostPageHtml() {
 
 function playPageHtml() {
   return `
-  <!-- ✅ Background Tết cho trang người chơi -->
   <div class="play-bg" aria-hidden="true"></div>
 
   <div class="header">
@@ -1280,6 +1409,7 @@ function playPageHtml() {
       });
     };
 
+    // ✅ đồng bộ timer đúng cả khi reload / vào giữa câu
     socket.on("question:start", function(q){
       if (!joined) return;
 
@@ -1298,13 +1428,17 @@ function playPageHtml() {
 
       applyAnswerColors("choicesPlay");
 
-      var delay = Math.max(0, q.startedAtMs - (q.serverNowMs || Date.now()));
-      var startLocalMs = Date.now() + delay;
+      var serverNow = q.serverNowMs || Date.now();
+      var startedAt = q.startedAtMs || serverNow;
 
-      playAudioAfter(delay);
+      var offset = serverNow - startedAt;
+      var startLocalMs = Date.now() - offset;
+      var delayToStart = Math.max(0, startedAt - serverNow);
+
+      playAudioAfter(delayToStart);
       startTimer("qaCardPlay", startLocalMs, q.timeLimitSec * 1000);
 
-      enableTimer = setTimeout(function(){ setAnswerEnabled(true); }, delay);
+      enableTimer = setTimeout(function(){ setAnswerEnabled(true); }, delayToStart);
 
       Array.prototype.forEach.call(document.getElementById("choicesPlay").querySelectorAll("button.choice"), function(btn){
         btn.onclick = function(){
@@ -1380,7 +1514,11 @@ io.on("connection", (socket) => {
       qStartAtMs: 0,
       timer: null,
       questionEndedFor: null,
-      players: new Map()
+      players: new Map(),
+
+      // ✅ random câu + đáp án
+      qOrder: null,
+      choiceMeta: new Map()
     };
     rooms.set(code, room);
     socket.join(code);
@@ -1399,7 +1537,18 @@ io.on("connection", (socket) => {
 
     room.started = true;
     room.ended = false;
+
+    // ✅ random thứ tự câu mỗi ván
+    room.qOrder = makeShuffledIndices(QUIZ.questions.length);
+    room.choiceMeta = new Map();
     room.qIndex = 0;
+
+    // ✅ reset điểm cho công bằng nếu đã có người vào từ trước
+    for (const p of room.players.values()) {
+      p.score = 0;
+      p.lastAnswer = null;
+    }
+
     startQuestion(room);
     ack && ack({ ok: true });
   });
@@ -1426,7 +1575,8 @@ io.on("connection", (socket) => {
     endQuestion(room);
     room.qIndex += 1;
 
-    if (room.qIndex >= QUIZ.questions.length) {
+    const total = room.qOrder ? room.qOrder.length : QUIZ.questions.length;
+    if (room.qIndex >= total) {
       endGame(room);
       return ack && ack({ ok: true, ended: true });
     }
@@ -1462,8 +1612,8 @@ io.on("connection", (socket) => {
     const p = room.players.get(socket.id);
     if (!p) return ack && ack({ ok: false, error: "Bạn chưa tham gia" });
 
-    const q = QUIZ.questions[room.qIndex];
-    if (!q) return ack && ack({ ok: false, error: "Không có câu hỏi" });
+    const { q } = getRoomQuestion(room);
+    const meta = ensureChoiceMeta(room);
 
     if (Date.now() < room.qStartAtMs) {
       return ack && ack({ ok: false, error: "Chưa bắt đầu, chờ 0.5 giây..." });
@@ -1475,7 +1625,9 @@ io.on("connection", (socket) => {
 
     const elapsedMs = Date.now() - room.qStartAtMs;
     const selected = Number(choiceIndex);
-    const correct = selected === q.correctIndex;
+
+    // ✅ đúng/sai theo index sau khi shuffle
+    const correct = selected === meta.correctShuffledIndex;
 
     const pts = computePoints({ correct, elapsedMs, limitSec: q.timeLimitSec });
     p.score += pts;
