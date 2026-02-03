@@ -173,6 +173,7 @@ function broadcast(room) {
 function startQuestion(room) {
   if (room.timer) clearTimeout(room.timer);
 
+  room.questionEndedFor = null; // reset cờ kết thúc câu
   room.qStartAtMs = Date.now() + PRE_DELAY_MS;
   for (const p of room.players.values()) p.lastAnswer = null;
 
@@ -186,6 +187,9 @@ function startQuestion(room) {
 
 function endQuestion(room) {
   if (room.ended) return;
+  if (room.questionEndedFor === room.qIndex) return; // tránh bắn event 2 lần
+
+  room.questionEndedFor = room.qIndex;
 
   if (room.timer) {
     clearTimeout(room.timer);
@@ -220,7 +224,7 @@ function endGame(room) {
   broadcast(room);
 }
 
-/* ================== LAYOUT (Splash = VIDEO + NHẠC) ================== */
+/* ================== LAYOUT (Splash video FULL + sáng hơn) ================== */
 function layout(title, bodyHtml) {
   return `<!doctype html>
 <html lang="vi">
@@ -229,11 +233,23 @@ function layout(title, bodyHtml) {
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>${title}</title>
 
+<!-- ✅ Fix vh chuẩn trên mobile: luôn full màn hình, không bị cắt -->
+<script>
+(function(){
+  function setVH(){
+    document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+  }
+  setVH();
+  window.addEventListener('resize', setVH);
+  window.addEventListener('orientationchange', setVH);
+})();
+</script>
+
 <script>
 (function(){
   try{
-    // ✅ splash chỉ hiện 1 lần trong 1 tab (session)
-    var KEY = 'intro_seen_session_v2';
+    // splash chỉ hiện 1 lần trong 1 tab (session)
+    var KEY = 'intro_seen_session_v3';
     if (sessionStorage.getItem(KEY) === '1') {
       document.documentElement.classList.add('intro-seen');
     }
@@ -349,7 +365,6 @@ hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 .badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--muted)}
 .good{color:var(--good)} .bad{color:var(--bad)}
 
-/* tables responsive */
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
 table{width:100%;border-collapse:collapse;margin-top:10px;min-width:420px}
 th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
@@ -358,7 +373,6 @@ th{color:var(--muted);font-weight:900}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999}
 .modal{max-width:720px;width:100%}
 
-/* timer */
 .qaCard{position:relative;overflow:hidden}
 .timer-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .timer-track{fill:none;stroke:rgba(255,255,255,.18);stroke-width:6}
@@ -367,28 +381,44 @@ th{color:var(--muted);font-weight:900}
   stroke-linecap:round;stroke-linejoin:round;opacity:0
 }
 
-/* ✅ INTRO VIDEO SPLASH */
+/* ✅ SPLASH VIDEO: FULL MÀN HÌNH, KHÔNG CẮT (mobile chuẩn bằng --vh) */
 .intro{
-  position:fixed; inset:0;
+  position:fixed;
+  left:0; top:0;
+  width:100vw;
+  height:calc(var(--vh, 1vh) * 100);
   background:#000;
-  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
   z-index:999999;
-}
-.intro video{
-  width:100%; height:100%;
-  object-fit:cover;
   display:block;
 }
+
+.intro video{
+  position:absolute;
+  left:0; top:0;
+  width:100vw;
+  height:calc(var(--vh, 1vh) * 100);
+  object-fit:contain;          /* ✅ hiện đầy đủ toàn bộ khung hình */
+  object-position:center;
+  background:#000;
+
+  /* ✅ tăng sáng nhẹ */
+  filter: brightness(1.18) contrast(1.06) saturate(1.06);
+}
+
+/* overlay làm nhẹ, không làm tối quá */
 .intro::after{
   content:"";
   position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.55));
+  background:linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.16));
   pointer-events:none;
 }
+
 .intro-hint{
   position:fixed;
-  bottom:14px; left:50%;
+  left:50%;
   transform:translateX(-50%);
+  bottom:calc(14px + env(safe-area-inset-bottom));
   background:rgba(0,0,0,.55);
   border:1px solid rgba(255,255,255,.25);
   color:#fff;
@@ -397,9 +427,11 @@ th{color:var(--muted);font-weight:900}
   font-size:12px;
   z-index:1000000;
 }
+
 .intro-sound{
   position:fixed;
-  top:14px; right:14px;
+  right:14px;
+  top:calc(14px + env(safe-area-inset-top));
   background:rgba(0,0,0,.55);
   border:1px solid rgba(255,255,255,.25);
   color:#fff;
@@ -411,7 +443,6 @@ th{color:var(--muted);font-weight:900}
 }
 .intro.hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
 
-/* ✅ show content after intro */
 .intro-seen .container{visibility:visible}
 .intro-seen #intro{display:none !important}
 </style>
@@ -423,7 +454,7 @@ th{color:var(--muted);font-weight:900}
     <source src="/video/intro.mp4" type="video/mp4">
   </video>
 
-  <!-- ✅ NHẠC SPLASH (GIỮ LẠI) -->
+  <!-- ✅ NHẠC SPLASH -->
   <audio id="introMusic" preload="auto" loop playsinline>
     <source src="/audio/splash.mp3" type="audio/mpeg">
   </audio>
@@ -441,17 +472,14 @@ th{color:var(--muted);font-weight:900}
   if(!intro) return;
   if (document.documentElement.classList.contains('intro-seen')) return;
 
-  var KEY = 'intro_seen_session_v2';
+  var KEY = 'intro_seen_session_v3';
   var vid = document.getElementById('introVid');
   var music = document.getElementById('introMusic');
   var hint = document.getElementById('introHint');
   var btnSound = document.getElementById('introSound');
 
-  // video chạy muted để autoplay chắc chắn
   try{ vid.play().catch(function(){}); }catch(e){}
 
-  // thử phát nhạc splash (có thể bị chặn)
-  var musicStarted = false;
   function tryPlayMusic(){
     if (!music) return;
     try{
@@ -459,10 +487,8 @@ th{color:var(--muted);font-weight:900}
       var p = music.play();
       if (p && typeof p.then === 'function') {
         p.then(function(){
-          musicStarted = true;
           btnSound.style.display = 'none';
         }).catch(function(){
-          musicStarted = false;
           btnSound.style.display = 'inline-block';
         });
       }
@@ -470,12 +496,10 @@ th{color:var(--muted);font-weight:900}
   }
   tryPlayMusic();
 
-  // nút bật nhạc (khi browser chặn autoplay)
   btnSound.addEventListener('click', function(ev){
     ev.stopPropagation();
     try{
       music.play().then(function(){
-        musicStarted = true;
         btnSound.style.display = 'none';
         if (hint) hint.textContent = "Bấm để vào";
       }).catch(function(){});
@@ -495,11 +519,9 @@ th{color:var(--muted);font-weight:900}
     setTimeout(function(){ if(intro) intro.remove(); }, 400);
   }
 
-  // click bất kỳ: vào web + tắt nhạc/video
   intro.addEventListener('click', hideIntro);
 })();
 </script>
-
 </body>
 </html>`;
 }
@@ -595,7 +617,6 @@ function hostPageHtml() {
     </div>
   </div>
 
-  <!-- ✅ NHẠC CÂU HỎI (GIỮ NGUYÊN) -->
   <audio id="qAudio" preload="auto" src="/audio/olympia.mp3"></audio>
 
   <div class="grid">
@@ -785,7 +806,6 @@ function hostPageHtml() {
       t.prog.style.opacity = "0";
     }
 
-    // ✅ Nhạc câu hỏi (Olympia)
     var audio = document.getElementById("qAudio");
     var soundBtn = document.getElementById("soundBtn");
     function stopAudio(){ try{ audio.pause(); audio.currentTime = 0; }catch(e){} }
@@ -941,7 +961,6 @@ function playPageHtml() {
     </div>
   </div>
 
-  <!-- ✅ NHẠC CÂU HỎI (GIỮ NGUYÊN) -->
   <audio id="qAudio" preload="auto" src="/audio/olympia.mp3"></audio>
 
   <div class="grid">
@@ -1131,7 +1150,6 @@ function playPageHtml() {
       t.prog.style.opacity = "0";
     }
 
-    // ✅ Nhạc câu hỏi (Olympia)
     var audio = document.getElementById("qAudio");
     var soundBtn = document.getElementById("soundBtn");
     function stopAudio(){ try{ audio.pause(); audio.currentTime = 0; }catch(e){} }
@@ -1303,6 +1321,7 @@ io.on("connection", (socket) => {
       qIndex: 0,
       qStartAtMs: 0,
       timer: null,
+      questionEndedFor: null,
       players: new Map()
     };
     rooms.set(code, room);
