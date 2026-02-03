@@ -65,134 +65,35 @@ function requireHost(req, res, next) {
 }
 
 /* ================== QUIZ CONFIG ================== */
-const PRE_DELAY_MS = 500;      // chuẩn bị 0.5s
-const POPUP_SHOW_MS = 7000;    // popup top5 hiện 7s
+const PRE_DELAY_MS = 500;       // chuẩn bị 0.5s
+const POPUP_SHOW_MS = 7000;     // popup top5 hiện 7s
+const RESULT_SHOW_MS = 2500;    // ✅ hiện biểu đồ trước top5
 const MAX_POINTS = 1000;
 
 /* ================== QUIZ (20 câu khó hơn) ================== */
 const QUIZ = {
   title: "Quiz Realtime – 22s + Nhạc Olympia + Popup Top 5",
   questions: [
-    {
-      text: "Nguyên tố hóa học nào có ký hiệu là W?",
-      choices: ["Vonfram (Tungsten)", "Kẽm (Zn)", "Sắt (Fe)", "Bạc (Ag)"],
-      correctIndex: 0,
-      timeLimitSec: 22
-    },
-    {
-      text: "Giá trị của log₂(64) bằng bao nhiêu?",
-      choices: ["4", "5", "6", "8"],
-      correctIndex: 2,
-      timeLimitSec: 22
-    },
-    {
-      text: "Số nguyên tố lớn nhất nhỏ hơn 100 là số nào?",
-      choices: ["97", "99", "91", "89"],
-      correctIndex: 0,
-      timeLimitSec: 22
-    },
-    {
-      text: "Định luật nào: Áp suất tác dụng lên chất lỏng được truyền nguyên vẹn theo mọi hướng?",
-      choices: ["Pascal", "Archimedes", "Ohm", "Boyle"],
-      correctIndex: 0,
-      timeLimitSec: 22
-    },
-    {
-      text: "Thành phần chiếm tỉ lệ lớn nhất trong khí quyển Trái Đất (theo thể tích) là gì?",
-      choices: ["O₂", "N₂", "CO₂", "Ar"],
-      correctIndex: 1,
-      timeLimitSec: 22
-    },
-    {
-      text: "Trong hệ SI, đơn vị của công (Work) là gì?",
-      choices: ["Watt", "Joule", "Newton", "Pascal"],
-      correctIndex: 1,
-      timeLimitSec: 22
-    },
-    {
-      text: "Tác giả của 'Truyện Kiều' là ai?",
-      choices: ["Nguyễn Du", "Hồ Xuân Hương", "Nguyễn Trãi", "Xuân Diệu"],
-      correctIndex: 0,
-      timeLimitSec: 22
-    },
-    {
-      text: "Vệ tinh nhân tạo đầu tiên của loài người tên là gì?",
-      choices: ["Apollo 11", "Sputnik 1", "Voyager 1", "Hubble"],
-      correctIndex: 1,
-      timeLimitSec: 22
-    },
-    {
-      text: "1 Ampere tương đương bao nhiêu Coulomb trên mỗi giây?",
-      choices: ["1 C/s", "10 C/s", "0.1 C/s", "100 C/s"],
-      correctIndex: 0,
-      timeLimitSec: 22
-    },
-    {
-      text: "Khái niệm 'chu kỳ bán rã' thường dùng trong lĩnh vực nào?",
-      choices: ["Âm học", "Phóng xạ hạt nhân", "Khí tượng", "Cơ học chất lỏng"],
-      correctIndex: 1,
-      timeLimitSec: 22
-    },
-    {
-      text: "Trong tam giác vuông, định lý Pythagoras: a² + b² = ?",
-      choices: ["c", "c²", "2c", "ab"],
-      correctIndex: 1,
-      timeLimitSec: 22
-    },
-    {
-      text: "Cấu trúc dữ liệu LIFO trong lập trình là gì?",
-      choices: ["Queue (Hàng đợi)", "Stack (Ngăn xếp)", "Tree (Cây)", "Graph (Đồ thị)"],
-      correctIndex: 1,
-      timeLimitSec: 22
-    },
-    {
-      text: "Đường tròn là tập hợp các điểm như thế nào trong mặt phẳng?",
-      choices: ["Cách đều một điểm cố định", "Cách đều một đường thẳng", "Tổng khoảng cách đến 2 điểm cố định không đổi", "Luôn tạo góc 90° với một tia cố định"],
-      correctIndex: 0,
-      timeLimitSec: 22
-    },
-    {
-      text: "Nguyên tố có số hiệu nguyên tử 29 là gì?",
-      choices: ["Ni (Niken)", "Cu (Đồng)", "Ag (Bạc)", "Sn (Thiếc)"],
-      correctIndex: 1,
-      timeLimitSec: 22
-    },
-    {
-      text: "Hằng số Avogadro xấp xỉ bằng bao nhiêu?",
-      choices: ["6.022×10²³", "3.14×10⁸", "9.81", "1.602×10⁻¹⁹"],
-      correctIndex: 0,
-      timeLimitSec: 22
-    },
-    {
-      text: "Tốc độ ánh sáng trong chân không xấp xỉ bằng bao nhiêu?",
-      choices: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10¹⁰ m/s", "3×10⁴ m/s"],
-      correctIndex: 1,
-      timeLimitSec: 22
-    },
-    {
-      text: "Hai điện trở bằng nhau R mắc song song, điện trở tương đương bằng bao nhiêu?",
-      choices: ["2R", "R/2", "R", "R²"],
-      correctIndex: 1,
-      timeLimitSec: 22
-    },
-    {
-      text: "CPI là viết tắt của chỉ số nào trong kinh tế?",
-      choices: ["Consumer Price Index", "Capital Profit Index", "Consumer Product Income", "Core Payment Indicator"],
-      correctIndex: 0,
-      timeLimitSec: 22
-    },
-    {
-      text: "Thủ đô của Australia là thành phố nào?",
-      choices: ["Sydney", "Melbourne", "Canberra", "Perth"],
-      correctIndex: 2,
-      timeLimitSec: 22
-    },
-    {
-      text: "HTTPS thường dùng giao thức bảo mật nào?",
-      choices: ["TLS", "FTP", "SMTP", "SNMP"],
-      correctIndex: 0,
-      timeLimitSec: 22
-    }
+    { text: "Nguyên tố hóa học nào có ký hiệu là W?", choices: ["Vonfram (Tungsten)", "Kẽm (Zn)", "Sắt (Fe)", "Bạc (Ag)"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Giá trị của log₂(64) bằng bao nhiêu?", choices: ["4", "5", "6", "8"], correctIndex: 2, timeLimitSec: 22 },
+    { text: "Số nguyên tố lớn nhất nhỏ hơn 100 là số nào?", choices: ["97", "99", "91", "89"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Định luật nào: Áp suất tác dụng lên chất lỏng được truyền nguyên vẹn theo mọi hướng?", choices: ["Pascal", "Archimedes", "Ohm", "Boyle"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Thành phần chiếm tỉ lệ lớn nhất trong khí quyển Trái Đất (theo thể tích) là gì?", choices: ["O₂", "N₂", "CO₂", "Ar"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Trong hệ SI, đơn vị của công (Work) là gì?", choices: ["Watt", "Joule", "Newton", "Pascal"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Tác giả của 'Truyện Kiều' là ai?", choices: ["Nguyễn Du", "Hồ Xuân Hương", "Nguyễn Trãi", "Xuân Diệu"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Vệ tinh nhân tạo đầu tiên của loài người tên là gì?", choices: ["Apollo 11", "Sputnik 1", "Voyager 1", "Hubble"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "1 Ampere tương đương bao nhiêu Coulomb trên mỗi giây?", choices: ["1 C/s", "10 C/s", "0.1 C/s", "100 C/s"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Khái niệm 'chu kỳ bán rã' thường dùng trong lĩnh vực nào?", choices: ["Âm học", "Phóng xạ hạt nhân", "Khí tượng", "Cơ học chất lỏng"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Trong tam giác vuông, định lý Pythagoras: a² + b² = ?", choices: ["c", "c²", "2c", "ab"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Cấu trúc dữ liệu LIFO trong lập trình là gì?", choices: ["Queue (Hàng đợi)", "Stack (Ngăn xếp)", "Tree (Cây)", "Graph (Đồ thị)"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Đường tròn là tập hợp các điểm như thế nào trong mặt phẳng?", choices: ["Cách đều một điểm cố định", "Cách đều một đường thẳng", "Tổng khoảng cách đến 2 điểm cố định không đổi", "Luôn tạo góc 90° với một tia cố định"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Nguyên tố có số hiệu nguyên tử 29 là gì?", choices: ["Ni (Niken)", "Cu (Đồng)", "Ag (Bạc)", "Sn (Thiếc)"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Hằng số Avogadro xấp xỉ bằng bao nhiêu?", choices: ["6.022×10²³", "3.14×10⁸", "9.81", "1.602×10⁻¹⁹"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Tốc độ ánh sáng trong chân không xấp xỉ bằng bao nhiêu?", choices: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10¹⁰ m/s", "3×10⁴ m/s"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Hai điện trở bằng nhau R mắc song song, điện trở tương đương bằng bao nhiêu?", choices: ["2R", "R/2", "R", "R²"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "CPI là viết tắt của chỉ số nào trong kinh tế?", choices: ["Consumer Price Index", "Capital Profit Index", "Consumer Product Income", "Core Payment Indicator"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Thủ đô của Australia là thành phố nào?", choices: ["Sydney", "Melbourne", "Canberra", "Perth"], correctIndex: 2, timeLimitSec: 22 },
+    { text: "HTTPS thường dùng giao thức bảo mật nào?", choices: ["TLS", "FTP", "SMTP", "SNMP"], correctIndex: 0, timeLimitSec: 22 }
   ]
 };
 
@@ -247,7 +148,6 @@ function getRoomQuestion(room) {
 }
 
 function ensureChoiceMeta(room) {
-  // meta theo "vị trí câu trong game" (room.qIndex)
   let meta = room.choiceMeta.get(room.qIndex);
   if (meta) return meta;
 
@@ -255,7 +155,11 @@ function ensureChoiceMeta(room) {
   const order = shuffleInPlace(Array.from({ length: q.choices.length }, (_, i) => i));
   const correctShuffledIndex = order.indexOf(q.correctIndex);
 
-  meta = { order, correctShuffledIndex };
+  meta = {
+    order,
+    correctShuffledIndex,
+    counts: new Array(order.length).fill(0) // ✅ đếm người chọn A/B/C/D theo thứ tự đã shuffle
+  };
   room.choiceMeta.set(room.qIndex, meta);
   return meta;
 }
@@ -320,7 +224,7 @@ function startQuestion(room) {
 
   for (const p of room.players.values()) p.lastAnswer = null;
 
-  // ✅ random đáp án cho câu hiện tại
+  // ✅ tạo meta (đáp án random + counts reset)
   ensureChoiceMeta(room);
 
   io.to(room.code).emit("question:start", safeQuestionPayload(room));
@@ -342,15 +246,27 @@ function endQuestion(room) {
     room.timer = null;
   }
 
+  const { q } = getRoomQuestion(room);
   const meta = ensureChoiceMeta(room);
+
+  const shuffledChoices = meta.order.map((i) => q.choices[i]);
+  const answeredCount = meta.counts.reduce((a, b) => a + b, 0);
+
   const totalTop15 = getTotalLeaderboard(room).slice(0, 15);
   const fastTop5 = getFastCorrectTop5(room);
 
   io.to(room.code).emit("question:end", {
     qIndex: room.qIndex,
-    correctIndex: meta.correctShuffledIndex, // ✅ đúng theo đáp án đã random
+    correctIndex: meta.correctShuffledIndex,
+    choices: shuffledChoices,
+    counts: meta.counts,
+    answeredCount,
+    totalPlayers: room.players.size,
+
+    // leaderboard + top5 (nhưng client sẽ show sau biểu đồ)
     totalTop15,
     fastTop5,
+    resultShowMs: RESULT_SHOW_MS,
     popupShowMs: POPUP_SHOW_MS
   });
 
@@ -379,7 +295,6 @@ function layout(title, bodyHtml) {
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>${title}</title>
 
-<!-- ✅ Fix vh chuẩn trên mobile -->
 <script>
 (function(){
   function setVH(){
@@ -425,6 +340,36 @@ body{
   overflow-x:hidden;
 }
 
+/* ✅ Background ảnh (áp dụng cho Host + Play khi có .app-bg trong page) */
+.app-bg{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:#050814;
+}
+.app-bg::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image:url("/img/tet-doan-vien.png");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  transform:scale(1.08);
+  filter:blur(22px) brightness(0.95) saturate(1.15);
+  opacity:0.35;
+}
+.app-bg::after{
+  content:"";
+  position:absolute; inset:0;
+  background-image:url("/img/tet-doan-vien.png");
+  background-size:contain;     /* ✅ hiển thị hết ảnh */
+  background-position:center;
+  background-repeat:no-repeat;
+  filter:drop-shadow(0 18px 50px rgba(0,0,0,.55));
+  opacity:1;
+}
+
 .container{
   max-width:980px;
   margin:0 auto;
@@ -434,7 +379,7 @@ body{
   visibility:hidden;
 
   position:relative;
-  z-index:1;
+  z-index:1; /* ✅ nằm trên background ảnh */
 }
 
 .header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -521,6 +466,57 @@ th{color:var(--muted);font-weight:900}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999}
 .modal{max-width:720px;width:100%}
 
+/* ✅ biểu đồ cột */
+.chart{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  margin-top:12px;
+}
+.barItem{flex:1;min-width:0}
+.barBox{
+  height:150px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(0,0,0,.18);
+  display:flex;
+  align-items:flex-end;
+  overflow:hidden;
+  position:relative;
+}
+.barFill{
+  width:100%;
+  height:0%;
+  background:rgba(255,255,255,.85);
+  transition:height .35s ease;
+}
+.barCount{
+  position:absolute;
+  left:10px;
+  bottom:8px;
+  font-size:12px;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 2px 10px rgba(0,0,0,.6);
+}
+.barLabel{
+  margin-top:8px;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:800;
+  line-height:1.2;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.barCorrect .barBox{
+  border-color: rgba(55,214,122,.95);
+  box-shadow:0 0 0 2px rgba(55,214,122,.25) inset, 0 0 18px rgba(55,214,122,.25);
+}
+.barCorrect .barFill{ background:rgba(55,214,122,.95); }
+
+/* timer */
 .qaCard{position:relative;overflow:hidden}
 .timer-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .timer-track{fill:none;stroke:rgba(255,255,255,.18);stroke-width:6}
@@ -587,36 +583,6 @@ th{color:var(--muted);font-weight:900}
 .intro.hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
 .intro-seen .container{visibility:visible}
 .intro-seen #intro{display:none !important}
-
-/* ================== PLAY BACKGROUND (FULL ảnh + đẹp) ================== */
-.play-bg{
-  position:fixed;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  background:#050814;
-}
-.play-bg::before{
-  content:"";
-  position:absolute; inset:0;
-  background-image:url("/img/tet-doan-vien.png");
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  transform:scale(1.08);
-  filter:blur(22px) brightness(0.95) saturate(1.15);
-  opacity:0.35;
-}
-.play-bg::after{
-  content:"";
-  position:absolute; inset:0;
-  background-image:url("/img/tet-doan-vien.png");
-  background-size:contain;
-  background-position:center;
-  background-repeat:no-repeat;
-  filter:drop-shadow(0 18px 50px rgba(0,0,0,.55));
-  opacity:1;
-}
 </style>
 </head>
 
@@ -785,6 +751,8 @@ app.get("/play", (_, res) => {
 /* ================== PAGES HTML ================== */
 function hostPageHtml() {
   return `
+  <div class="app-bg" aria-hidden="true"></div>
+
   <div class="header">
     <h1>Host (MC)</h1>
     <div class="row">
@@ -840,6 +808,20 @@ function hostPageHtml() {
     </div>
   </div>
 
+  <!-- ✅ Popup kết quả (biểu đồ) -->
+  <div id="resultPopup" class="overlay">
+    <div class="modal card">
+      <div class="header">
+        <h1 style="font-size:18px;margin:0">Kết quả câu vừa rồi</h1>
+        <span class="pill"><span class="small">Biểu đồ lựa chọn</span></span>
+      </div>
+      <div id="resultMeta" class="small" style="margin-top:6px"></div>
+      <div id="resultChart" class="chart"></div>
+      <div id="resultCorrect" class="small" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- ✅ Popup Top 5 -->
   <div id="fastPopup" class="overlay">
     <div class="modal card">
       <div class="header">
@@ -890,6 +872,7 @@ function hostPageHtml() {
       });
     }
 
+    /* ===== Timer SVG ===== */
     function ensureTimer(cardId){
       var card = $(cardId);
       if (!card) return null;
@@ -984,7 +967,7 @@ function hostPageHtml() {
       t.prog.style.opacity = "0";
     }
 
-    // Nhạc câu hỏi
+    /* ===== Audio ===== */
     var audio = document.getElementById("qAudio");
     var soundBtn = document.getElementById("soundBtn");
     function stopAudio(){ try{ audio.pause(); audio.currentTime = 0; }catch(e){} }
@@ -999,6 +982,7 @@ function hostPageHtml() {
       audio.play().then(function(){ soundBtn.style.display = "none"; }).catch(function(){});
     };
 
+    /* ===== Connection UI ===== */
     var dot = document.getElementById("connDot");
     var text = document.getElementById("connText");
     function setConn(ok, msg){
@@ -1010,6 +994,7 @@ function hostPageHtml() {
     var code = null;
     var state = null;
 
+    /* ===== Popup Top5 ===== */
     var popupTimer = null;
     function hidePopup(){ document.getElementById("fastPopup").style.display = "none"; }
     function showPopup(list, showMs){
@@ -1024,6 +1009,80 @@ function hostPageHtml() {
       }
       document.getElementById("fastPopup").style.display = "flex";
       popupTimer = setTimeout(hidePopup, showMs || 7000);
+    }
+
+    /* ===== Popup Result Chart ===== */
+    var resultTimer = null;
+    function hideResult(){ document.getElementById("resultPopup").style.display = "none"; }
+    function renderChart(containerId, choices, counts, correctIndex){
+      var wrap = document.getElementById(containerId);
+      if (!wrap) return;
+      wrap.innerHTML = "";
+
+      var max = 1;
+      for (var i=0;i<counts.length;i++) max = Math.max(max, counts[i] || 0);
+
+      for (var i=0;i<choices.length;i++){
+        var letter = String.fromCharCode(65+i);
+        var ctext = String(choices[i] || "");
+        var cnt = Number(counts[i] || 0);
+        var pct = Math.round((cnt / max) * 100);
+
+        var item = document.createElement("div");
+        item.className = "barItem" + (i === correctIndex ? " barCorrect" : "");
+
+        var box = document.createElement("div");
+        box.className = "barBox";
+
+        var fill = document.createElement("div");
+        fill.className = "barFill";
+        fill.style.height = pct + "%";
+
+        var num = document.createElement("div");
+        num.className = "barCount";
+        num.textContent = String(cnt);
+
+        box.appendChild(fill);
+        box.appendChild(num);
+
+        var lbl = document.createElement("div");
+        lbl.className = "barLabel";
+        lbl.textContent = letter + ": " + ctext;
+
+        item.appendChild(box);
+        item.appendChild(lbl);
+        wrap.appendChild(item);
+      }
+    }
+
+    function showResultThenTop5(payload){
+      if (resultTimer) clearTimeout(resultTimer);
+
+      var choices = payload.choices || [];
+      var counts = payload.counts || [];
+      var correctIndex = Number(payload.correctIndex || 0);
+      var answeredCount = Number(payload.answeredCount || 0);
+      var totalPlayers = Number(payload.totalPlayers || 0);
+
+      document.getElementById("resultMeta").textContent =
+        "Số lượt chọn: " + answeredCount + " / " + totalPlayers;
+
+      var correctLetter = String.fromCharCode(65 + correctIndex);
+      var correctText = (choices[correctIndex] != null) ? String(choices[correctIndex]) : "";
+
+      document.getElementById("resultCorrect").innerHTML =
+        '<span class="badge">Đáp án đúng: <b>' + correctLetter + "</b></span> " +
+        '<span class="small" style="margin-left:8px">' + esc(correctText) + "</span>";
+
+      renderChart("resultChart", choices, counts, correctIndex);
+
+      document.getElementById("resultPopup").style.display = "flex";
+
+      var showMs = Number(payload.resultShowMs || 2500);
+      resultTimer = setTimeout(function(){
+        hideResult();
+        showPopup(payload.fastTop5 || [], payload.popupShowMs || 7000);
+      }, showMs);
     }
 
     function setButtons(){
@@ -1042,14 +1101,14 @@ function hostPageHtml() {
         if (!resp || !resp.ok) return alert((resp && resp.error) || "Không tạo được phòng");
         code = resp.code;
         document.getElementById("roomCode").textContent = code;
-        hidePopup(); stopAudio(); stopTimer("qaCardHost"); setButtons();
+        hidePopup(); hideResult(); stopAudio(); stopTimer("qaCardHost"); setButtons();
       });
     };
 
     document.getElementById("btnStart").onclick = function(){
       socket.emit("host:start", { code: code }, function(resp){
         if (!resp || !resp.ok) return alert((resp && resp.error) || "Không thể bắt đầu");
-        hidePopup(); stopAudio(); stopTimer("qaCardHost"); setButtons();
+        hidePopup(); hideResult(); stopAudio(); stopTimer("qaCardHost"); setButtons();
       });
     };
 
@@ -1062,7 +1121,7 @@ function hostPageHtml() {
     document.getElementById("btnNext").onclick = function(){
       socket.emit("host:next", { code: code }, function(resp){
         if (!resp || !resp.ok) return alert((resp && resp.error) || "Lỗi");
-        hidePopup(); stopAudio(); stopTimer("qaCardHost"); setButtons();
+        hidePopup(); hideResult(); stopAudio(); stopTimer("qaCardHost"); setButtons();
       });
     };
 
@@ -1082,9 +1141,8 @@ function hostPageHtml() {
       document.getElementById("qAnswered").textContent = String(p.answered) + "/" + String(p.totalPlayers);
     });
 
-    // ✅ đồng bộ timer đúng cả khi reload / vào giữa câu
     socket.on("question:start", function(q){
-      hidePopup(); stopAudio(); stopTimer("qaCardHost");
+      hidePopup(); hideResult(); stopAudio(); stopTimer("qaCardHost");
 
       document.getElementById("qText").textContent = q.text;
       document.getElementById("qAnswered").textContent = "0";
@@ -1109,17 +1167,20 @@ function hostPageHtml() {
 
     socket.on("question:end", function(p){
       stopAudio(); stopTimer("qaCardHost");
+      hidePopup(); // ✅ top5 sẽ show sau khi chart show xong
 
       var totalTop15 = p.totalTop15 || [];
       document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
         return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
       }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
 
-      showPopup(p.fastTop5 || [], p.popupShowMs || 7000);
+      // ✅ show chart trước, rồi mới show top5
+      showResultThenTop5(p);
     });
 
     socket.on("game:end", function(p){
       stopAudio(); stopTimer("qaCardHost");
+      hidePopup(); hideResult();
 
       var totalTop15 = p.totalTop15 || [];
       document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
@@ -1136,7 +1197,7 @@ function hostPageHtml() {
 
 function playPageHtml() {
   return `
-  <div class="play-bg" aria-hidden="true"></div>
+  <div class="app-bg" aria-hidden="true"></div>
 
   <div class="header">
     <h1>Người chơi</h1>
@@ -1193,6 +1254,20 @@ function playPageHtml() {
     </div>
   </div>
 
+  <!-- ✅ Popup kết quả (biểu đồ) -->
+  <div id="resultPopup" class="overlay">
+    <div class="modal card">
+      <div class="header">
+        <h1 style="font-size:18px;margin:0">Kết quả câu vừa rồi</h1>
+        <span class="pill"><span class="small">Biểu đồ lựa chọn</span></span>
+      </div>
+      <div id="resultMeta" class="small" style="margin-top:6px"></div>
+      <div id="resultChart" class="chart"></div>
+      <div id="resultCorrect" class="small" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- ✅ Popup Top 5 -->
   <div id="fastPopup" class="overlay">
     <div class="modal card">
       <div class="header">
@@ -1378,6 +1453,7 @@ function playPageHtml() {
       });
     }
 
+    /* ===== Popup Top5 ===== */
     var popupTimer = null;
     function hidePopup(){ document.getElementById("fastPopup").style.display = "none"; }
     function showPopup(list, showMs){
@@ -1392,6 +1468,80 @@ function playPageHtml() {
       }
       document.getElementById("fastPopup").style.display = "flex";
       popupTimer = setTimeout(hidePopup, showMs || 7000);
+    }
+
+    /* ===== Popup Result Chart ===== */
+    var resultTimer = null;
+    function hideResult(){ document.getElementById("resultPopup").style.display = "none"; }
+    function renderChart(containerId, choices, counts, correctIndex){
+      var wrap = document.getElementById(containerId);
+      if (!wrap) return;
+      wrap.innerHTML = "";
+
+      var max = 1;
+      for (var i=0;i<counts.length;i++) max = Math.max(max, counts[i] || 0);
+
+      for (var i=0;i<choices.length;i++){
+        var letter = String.fromCharCode(65+i);
+        var ctext = String(choices[i] || "");
+        var cnt = Number(counts[i] || 0);
+        var pct = Math.round((cnt / max) * 100);
+
+        var item = document.createElement("div");
+        item.className = "barItem" + (i === correctIndex ? " barCorrect" : "");
+
+        var box = document.createElement("div");
+        box.className = "barBox";
+
+        var fill = document.createElement("div");
+        fill.className = "barFill";
+        fill.style.height = pct + "%";
+
+        var num = document.createElement("div");
+        num.className = "barCount";
+        num.textContent = String(cnt);
+
+        box.appendChild(fill);
+        box.appendChild(num);
+
+        var lbl = document.createElement("div");
+        lbl.className = "barLabel";
+        lbl.textContent = letter + ": " + ctext;
+
+        item.appendChild(box);
+        item.appendChild(lbl);
+        wrap.appendChild(item);
+      }
+    }
+
+    function showResultThenTop5(payload){
+      if (resultTimer) clearTimeout(resultTimer);
+
+      var choices = payload.choices || [];
+      var counts = payload.counts || [];
+      var correctIndex = Number(payload.correctIndex || 0);
+      var answeredCount = Number(payload.answeredCount || 0);
+      var totalPlayers = Number(payload.totalPlayers || 0);
+
+      document.getElementById("resultMeta").textContent =
+        "Số lượt chọn: " + answeredCount + " / " + totalPlayers;
+
+      var correctLetter = String.fromCharCode(65 + correctIndex);
+      var correctText = (choices[correctIndex] != null) ? String(choices[correctIndex]) : "";
+
+      document.getElementById("resultCorrect").innerHTML =
+        '<span class="badge">Đáp án đúng: <b>' + correctLetter + "</b></span> " +
+        '<span class="small" style="margin-left:8px">' + esc(correctText) + "</span>";
+
+      renderChart("resultChart", choices, counts, correctIndex);
+
+      document.getElementById("resultPopup").style.display = "flex";
+
+      var showMs = Number(payload.resultShowMs || 2500);
+      resultTimer = setTimeout(function(){
+        hideResult();
+        showPopup(payload.fastTop5 || [], payload.popupShowMs || 7000);
+      }, showMs);
     }
 
     document.getElementById("btnJoin").onclick = function(){
@@ -1409,11 +1559,10 @@ function playPageHtml() {
       });
     };
 
-    // ✅ đồng bộ timer đúng cả khi reload / vào giữa câu
     socket.on("question:start", function(q){
       if (!joined) return;
 
-      hidePopup(); stopAudio(); stopTimer("qaCardPlay"); clearEnable();
+      hidePopup(); hideResult(); stopAudio(); stopTimer("qaCardPlay"); clearEnable();
       myAnswered = false;
       document.getElementById("feedback").textContent = "";
       document.getElementById("qText").textContent = q.text;
@@ -1454,11 +1603,11 @@ function playPageHtml() {
               document.getElementById("feedback").innerHTML = '<span class="bad">✖ ' + esc((resp && resp.error) || "Lỗi") + '</span>';
               return;
             }
+
+            // ✅ KHÔNG HIỆN ĐÚNG/SAI + ĐIỂM
             document.getElementById("score").textContent = String(resp.totalScore || 0);
             document.getElementById("rank").textContent = String(resp.rank || "—");
-            document.getElementById("feedback").innerHTML = resp.correct
-              ? '<span class="good">✔ Đúng</span> • +' + resp.points + " điểm"
-              : '<span class="bad">✖ Sai</span> • +0 điểm';
+            document.getElementById("feedback").innerHTML = '<span class="badge">Đã gửi đáp án • chờ MC công bố…</span>';
           });
         };
       });
@@ -1468,19 +1617,22 @@ function playPageHtml() {
       if (!joined) return;
 
       stopAudio(); stopTimer("qaCardPlay"); clearEnable();
+      hidePopup(); // ✅ top5 sẽ show sau khi chart show xong
 
       var totalTop15 = p.totalTop15 || [];
       document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
         return "<tr><td>" + (i+1) + "</td><td>" + esc(x.name) + "</td><td>" + x.score + "</td></tr>";
       }).join("") || '<tr><td colspan="3" class="small">Chưa có dữ liệu.</td></tr>';
 
-      showPopup(p.fastTop5 || [], p.popupShowMs || 7000);
+      // ✅ show chart trước, rồi mới show top5
+      showResultThenTop5(p);
     });
 
     socket.on("game:end", function(p){
       if (!joined) return;
 
       stopAudio(); stopTimer("qaCardPlay"); clearEnable();
+      hidePopup(); hideResult();
 
       var totalTop15 = p.totalTop15 || [];
       document.getElementById("lbBody").innerHTML = (totalTop15.length ? totalTop15 : []).map(function(x,i){
@@ -1515,8 +1667,6 @@ io.on("connection", (socket) => {
       timer: null,
       questionEndedFor: null,
       players: new Map(),
-
-      // ✅ random câu + đáp án
       qOrder: null,
       choiceMeta: new Map()
     };
@@ -1538,12 +1688,11 @@ io.on("connection", (socket) => {
     room.started = true;
     room.ended = false;
 
-    // ✅ random thứ tự câu mỗi ván
-    room.qOrder = makeShuffledIndices(QUIZ.questions.length);
+    room.qOrder = makeShuffledIndices(QUIZ.questions.length); // random câu
     room.choiceMeta = new Map();
     room.qIndex = 0;
 
-    // ✅ reset điểm cho công bằng nếu đã có người vào từ trước
+    // reset điểm
     for (const p of room.players.values()) {
       p.score = 0;
       p.lastAnswer = null;
@@ -1626,9 +1775,11 @@ io.on("connection", (socket) => {
     const elapsedMs = Date.now() - room.qStartAtMs;
     const selected = Number(choiceIndex);
 
-    // ✅ đúng/sai theo index sau khi shuffle
-    const correct = selected === meta.correctShuffledIndex;
+    if (Number.isFinite(selected) && selected >= 0 && selected < meta.counts.length) {
+      meta.counts[selected] += 1; // ✅ đếm lựa chọn
+    }
 
+    const correct = selected === meta.correctShuffledIndex;
     const pts = computePoints({ correct, elapsedMs, limitSec: q.timeLimitSec });
     p.score += pts;
 
@@ -1637,7 +1788,8 @@ io.on("connection", (socket) => {
     const leaderboard = getTotalLeaderboard(room);
     const rank = leaderboard.findIndex((x) => x.socketId === socket.id) + 1;
 
-    ack && ack({ ok: true, correct, points: pts, totalScore: p.score, rank });
+    // ✅ Không trả về correct/points cho người chơi nữa
+    ack && ack({ ok: true, totalScore: p.score, rank });
 
     let answered = 0;
     for (const pl of room.players.values()) {
