@@ -450,10 +450,15 @@ th{color:var(--muted);font-weight:900}
 
 <body>
 <div id="intro" class="intro" aria-label="Intro video">
-  <video id="introVid" autoplay muted loop playsinline preload="auto">
-    <source src="/video/intro.mp4" type="video/mp4">
-  </video>
+  <!-- Video nền (cover) để lấp phần viền, lấy màu theo chính video -->
+<video id="introVidBg" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+  <source src="/video/intro.mp4" type="video/mp4">
+</video>
 
+<!-- Video chính (contain) để hiển thị đầy đủ khung hình -->
+<video id="introVid" autoplay muted loop playsinline preload="auto">
+  <source src="/video/intro.mp4" type="video/mp4">
+</video>
   <!-- ✅ NHẠC SPLASH -->
   <audio id="introMusic" preload="auto" loop playsinline>
     <source src="/audio/splash.mp3" type="audio/mpeg">
