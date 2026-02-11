@@ -87,7 +87,7 @@ const QUIZ = {
     { text: "Nếu công ty đi nhậu, ai là người tửu  lượng tốt nhất?", choices: ["Nam", "Chiến", "Bắc", "Tuấn"], correctIndex: 2, timeLimitSec: 22 },
     { text: "Nhân viên Mulnitech đi làm bằng bao nhiêu loại phương tiện giao thông?", choices: ["2", "3", "4", "5"], correctIndex: 2, timeLimitSec: 22 },
     { text: "Hải sản nào ko có trên bàn tiệc của bạn hôm nay?", choices: ["Tôm", "Mực", "Cá", "Rong biển "], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Trong bữa tiệc công ty bạn hnay có bao nhiêu người ko mặc quần dài?", choices: ["2", 4", "3", "5"], correctIndex: 2, timeLimitSec: 22 },
+    { text: "Trong bữa tiệc công ty bạn hnay có bao nhiêu người ko mặc quần dài?", choices: ["2", "4", "3", "5"], correctIndex: 2, timeLimitSec: 22 },
     { text: "Tốc độ ánh sáng trong chân không xấp xỉ?", choices: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10¹⁰ m/s", "3×10⁴ m/s"], correctIndex: 1, timeLimitSec: 22 },
     { text: "CPI là viết tắt của chỉ số nào?", choices: ["Consumer Price Index", "Capital Profit Index", "Consumer Product Income", "Core Payment Indicator"], correctIndex: 0, timeLimitSec: 22 },
     { text: "Thủ đô của Australia là thành phố nào?", choices: ["Sydney", "Melbourne", "Canberra", "Perth"], correctIndex: 2, timeLimitSec: 22 },
