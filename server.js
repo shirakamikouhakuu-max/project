@@ -71,28 +71,27 @@ const MAX_POINTS = 1000;
 
 /* ================== QUIZ (20 câu khó hơn) ================== */
 const QUIZ = {
-  title: "Quiz Realtime – 22s + Nhạc Olympia + Biểu đồ Kahoot-like",
+  title: "AI NHANH NHẤT",
   questions: [
-    { text: "Nguyên tố hóa học nào có ký hiệu là W?", choices: ["Vonfram (Tungsten)", "Kẽm (Zn)", "Sắt (Fe)", "Bạc (Ag)"], correctIndex: 0, timeLimitSec: 22 },
-    { text: "Giá trị của log₂(64) bằng bao nhiêu?", choices: ["4", "5", "6", "8"], correctIndex: 2, timeLimitSec: 22 },
-    { text: "Số nguyên tố lớn nhất nhỏ hơn 100 là số nào?", choices: ["97", "99", "91", "89"], correctIndex: 0, timeLimitSec: 22 },
-    { text: "Định luật nào: Áp suất tác dụng lên chất lỏng được truyền nguyên vẹn theo mọi hướng?", choices: ["Pascal", "Archimedes", "Ohm", "Boyle"], correctIndex: 0, timeLimitSec: 22 },
-    { text: "Thành phần chiếm tỉ lệ lớn nhất trong khí quyển Trái Đất là gì?", choices: ["O₂", "N₂", "CO₂", "Ar"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Trong hệ SI, đơn vị của công (Work) là gì?", choices: ["Watt", "Joule", "Newton", "Pascal"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Tác giả của 'Truyện Kiều' là ai?", choices: ["Nguyễn Du", "Hồ Xuân Hương", "Nguyễn Trãi", "Xuân Diệu"], correctIndex: 0, timeLimitSec: 22 },
-    { text: "Vệ tinh nhân tạo đầu tiên của loài người tên là gì?", choices: ["Apollo 11", "Sputnik 1", "Voyager 1", "Hubble"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "1 Ampere tương đương bao nhiêu Coulomb trên mỗi giây?", choices: ["1 C/s", "10 C/s", "0.1 C/s", "100 C/s"], correctIndex: 0, timeLimitSec: 22 },
-    { text: "Khái niệm 'chu kỳ bán rã' thường dùng trong lĩnh vực nào?", choices: ["Âm học", "Phóng xạ hạt nhân", "Khí tượng", "Cơ học chất lỏng"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Trong tam giác vuông, định lý Pythagoras: a² + b² = ?", choices: ["c", "c²", "2c", "ab"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Cấu trúc dữ liệu LIFO trong lập trình là gì?", choices: ["Queue", "Stack", "Tree", "Graph"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Đường tròn là tập hợp các điểm như thế nào?", choices: ["Cách đều một điểm cố định", "Cách đều một đường thẳng", "Tổng khoảng cách đến 2 điểm cố định không đổi", "Luôn tạo góc 90° với một tia"], correctIndex: 0, timeLimitSec: 22 },
-    { text: "Nguyên tố có số hiệu nguyên tử 29 là gì?", choices: ["Ni", "Cu", "Ag", "Sn"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Hằng số Avogadro xấp xỉ bằng bao nhiêu?", choices: ["6.022×10²³", "3.14×10⁸", "9.81", "1.602×10⁻¹⁹"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Công ty Cổ phần Multitech được thành lập vào ngày nào?", choices: ["31/01/2010", " 31/03/2010", " 31/05/2010", "31/7/2010"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Tổng các chữ số trong mã số thuế của Công ty là bao nhiêu?", choices: ["40", "41", "42", "43"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Tháng 9 là sinh nhật của lãnh đạo nào trong Công ty?", choices: ["Chủ Tịch Phú", "Giám Đốc Cường", "Không ai cả", "Cả hai"], correctIndex: 3, timeLimitSec: 22 },
+    { text: "Công ty CP Multitech hiện có bao nhiêu thành viên chính thức?", choices: ["12", "13", "14", "15"], correctIndex: 2, timeLimitSec: 22 },
+    { text: "Slogan Công ty là gì?", choices: ["Giỏi Công nghệ, Mạnh triển khai", "Đổi mới – Làm chủ công nghệ", "Tinh nhuệ – Chuyên sâu", "Chính trực – Kỷ luật"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Công ty mình có bao nhiêu người độc toàn thân ( độc thân)?", choices: ["4", "5", "6", "7"], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Người lớn tuổi nhất của công ty sinh năm bao nhiêu?", choices: ["1978", "1979", "1980", "1981"], correctIndex: 2, timeLimitSec: 22 },
+    { text: "NV trẻ nhất công ty sinh năm bao nhiêu?", choices: ["2000", "2001", "2002", "2003"], correctIndex: 3, timeLimitSec: 22 },
+    { text: "Logo công ty có màu gì?", choices: ["cam + đen", "cam + tím", "đỏ + cam", "cam + xanh"], correctIndex: 3, timeLimitSec: 22 },
+    { text: "Ai là người đến công ty sớm nhất thường xuyên nhất?", choices: ["Chiến", "Giang Bùi", " Bắc", "Thái"], correctIndex: 0, timeLimitSec: 22 },
+    { text: "Sự kiện nội bộ đầu tiên trong năm 2026 là gì? ", choices: ["Tất niên", "Khai xuân", "Phát động kế hoạch kinh doanh", "Nhậu kết đoàn"], correctIndex: 3, timeLimitSec: 22 },
+    { text: "Nếu công ty đi nhậu, ai là người tửu  lượng tốt nhất?", choices: ["Nam", "Chiến", "Bắc", "Tuấn"], correctIndex: 2, timeLimitSec: 22 },
+    { text: "Nhân viên Mulnitech đi làm bằng bao nhiêu loại phương tiện giao thông?", choices: ["2", "3", "4", "5"], correctIndex: 2, timeLimitSec: 22 },
+    { text: "Hải sản nào ko có trên bàn tiệc của bạn hôm nay?", choices: ["Tôm", "Mực", "Cá", "Rong biển "], correctIndex: 1, timeLimitSec: 22 },
+    { text: "Trong bữa tiệc công ty bạn hnay có bao nhiêu người ko mặc quần …. dài?", choices: ["2", 4", "3", "5"], correctIndex: 2, timeLimitSec: 22 },
     { text: "Tốc độ ánh sáng trong chân không xấp xỉ?", choices: ["3×10⁶ m/s", "3×10⁸ m/s", "3×10¹⁰ m/s", "3×10⁴ m/s"], correctIndex: 1, timeLimitSec: 22 },
-    { text: "Hai điện trở bằng nhau R mắc song song, Rtd = ?", choices: ["2R", "R/2", "R", "R²"], correctIndex: 1, timeLimitSec: 22 },
     { text: "CPI là viết tắt của chỉ số nào?", choices: ["Consumer Price Index", "Capital Profit Index", "Consumer Product Income", "Core Payment Indicator"], correctIndex: 0, timeLimitSec: 22 },
     { text: "Thủ đô của Australia là thành phố nào?", choices: ["Sydney", "Melbourne", "Canberra", "Perth"], correctIndex: 2, timeLimitSec: 22 },
-    { text: "HTTPS thường dùng lớp bảo mật nào?", choices: ["TLS", "FTP", "SMTP", "SNMP"], correctIndex: 0, timeLimitSec: 22 }
+    { text: "Năm 2026 là năm mệnh gì", choices: ["Thủy", "Thổ","Kim", "Hỏa"], correctIndex: 3, timeLimitSec: 22 }
   ]
 };
 
